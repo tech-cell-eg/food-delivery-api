@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategoryResource extends JsonResource
+class MealVariantResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +16,10 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'image_url' => $this->image_url,
-            'average_rating' => round($this->average_rating, 1),
-            'restaurants_count' => $this->restaurants_count,
+            'size' => $this->size,
+            'price' => $this->price,
+            'is_available' => $this->is_available,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
-
-    }
+}
 }

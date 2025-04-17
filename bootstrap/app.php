@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success' => false,
+                    'status' => (bool) false,
                     'message' => "Page not found",
                     'data'    => $e->getMessage(),
                 ], 404);
@@ -34,7 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ModelNotFoundException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success' => false,
+                    'status' => (bool) false,
                     'message' => "Record not found",
                     'data'    => $e->getMessage(),
                 ], 404);
@@ -44,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success' => false,
+                    'status' => (bool) false,
                     'message' => "Method not allowed",
                     'data'    => $e->getMessage(),
                 ], 405);
@@ -54,7 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success' => false,
+                    'status' => (bool) false,
                     'message' => "Validation error",
                     'data'    => $e->errors(),
                 ], 422);
@@ -64,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success' => false,
+                    'status' => (bool) false,
                     'message' => "Unauthorized access",
                     'data'    => $e->getMessage(),
                 ], 401);
@@ -74,7 +74,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'success' => false,
+                    'status' => (bool) false,
                     'message' => "Unexpected error",
                     'data'    => $e->getMessage(),
                 ], 500);

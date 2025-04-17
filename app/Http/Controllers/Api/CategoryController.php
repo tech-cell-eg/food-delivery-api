@@ -20,4 +20,14 @@ class CategoryController extends Controller
         }
         return $this->successResponse(CategoryResource::collection($categories), 'Categories fetched successfully');
     }
+    public function show($id)
+    {
+        $category = Category::with(['restaurants', 'image'])->find($id);
+
+        if (!$category) {
+            return $this->errorResponse('No data found', 404);
+        }
+
+        return $this->successResponse(new CategoryResource($category), 'Retrieved data successfully');
+    }
 }

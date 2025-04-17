@@ -13,6 +13,27 @@ class Category extends Model
     {
         return $this->morphOne(Image::class, 'imageable');
     }
+    public function restaurants()
+    {
+        return $this->belongsToMany(Restaurant::class);
+    }
+    public function meals()
+    {
+        return $this->belongsToMany(Meal::class, 'category_meal');
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->restaurants()
+            ->withAvg('reviews', 'rating')
+            ->get()
+            ->avg('reviews_avg_rating') ?? 0;
+    }
+
+    public function getRestaurantsCountAttribute()
+    {
+        return $this->restaurants()->count();
+    }
 
     public function getImageUrlAttribute()
     {
