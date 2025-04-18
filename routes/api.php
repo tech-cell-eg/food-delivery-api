@@ -8,10 +8,11 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 
 Route::group(['prefix' => 'v1'], function () {
-    Route::group(['middleware'=> 'auth'], function () {
         // Categories Routes
+        Route::get('/categories', [CategoryController::class,'index']);
         Route::get('/categories/{category}', [CategoryController::class, 'show']);
         // Restaurant
+        Route::get('/restaurants', [RestaurantController::class,'index']);
         Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 
         Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
@@ -22,6 +23,4 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
         Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
-
-    });
 });

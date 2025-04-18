@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Restaurant extends Model
 {
+    use Sluggable;
+
     protected $fillable = [
         'name',
         'slug',
@@ -17,8 +21,17 @@ class Restaurant extends Model
         'delivery_fee',
         'open_at',
         'close_at',
+        'average_delivery_time'
     ];
 
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name'
+            ]
+        ];
+    }
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_restaurant');
@@ -46,6 +59,11 @@ class Restaurant extends Model
     public function meals()
     {
         return $this->hasMany(Meal::class);
+    }
+    public function isOpenNow()
+    {
+        $now = now()->format('H:i');
+        return $now >= $this->open_at && $now <= $this->close_at;
     }
 
 }
