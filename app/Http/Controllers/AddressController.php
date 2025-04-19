@@ -7,6 +7,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\AddressResource;
+use App\Models\Address;
 
 class AddressController extends Controller
 {
@@ -17,15 +18,7 @@ class AddressController extends Controller
             Auth::user()->addresses()->update(['is_default' => false]);
         }
 
-        $address = Auth::user()->addresses()->create([
-            'label' => $request->label,
-            'street' => $request->street,
-            'city' => $request->city,
-            'state' => $request->state,
-            'postal_code' => $request->postal_code,
-            'country' => $request->country,
-            'is_default' => $request->is_default ?? false,
-        ]);
+        $address = Auth::user()->addresses()->create($request->validated());
 
         return $this->successResponse(new AddressResource($address), 'Address created successfully', 201);
     }
@@ -37,12 +30,10 @@ class AddressController extends Controller
         return $this->successResponse(AddressResource::collection($addresses), 'Addresses retrieved successfully');
     }
 
-    public function show($id)
+    public function show(Address $address)
     {
-        $address = Auth::user()->addresses()->find($id);
-
-        if (!$address) {
-            return $this->errorResponse('Address not found', 404);
+        if ($address->user_id !== Auth::id()) {
+            return $this->errorResponse('You do not have access', '', 404);
         }
 
         return $this->successResponse(new AddressResource($address), 'Address retrieved successfully');
