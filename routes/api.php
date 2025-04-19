@@ -19,7 +19,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
         Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
-        Route::get('/addresses/{id}', [AddressController::class, 'show'])->name('addresses.show');
+        Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
 
         Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
         Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
