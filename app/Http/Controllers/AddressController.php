@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAddressRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,18 +11,8 @@ use App\Http\Resources\AddressResource;
 class AddressController extends Controller
 {
     use ApiResponse;
-    public function store(Request $request)
+    public function store(StoreAddressRequest $request)
     {
-        $request->validate([
-            'label' => ['nullable', 'string', 'max:50'],
-            'street' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:100'],
-            'state' => ['nullable', 'string', 'max:100'],
-            'postal_code' => ['nullable', 'string', 'max:20'],
-            'country' => ['required', 'string', 'max:100'],
-            'is_default' => ['boolean'],
-        ]);
-
         if ($request->is_default) {
             Auth::user()->addresses()->update(['is_default' => false]);
         }
