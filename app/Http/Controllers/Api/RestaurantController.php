@@ -14,9 +14,24 @@ class RestaurantController extends Controller
 {
     use ApiResponse;
 
-    public function index()
+    public function index(Request $request)
     {
-        $restaurants = Restaurant::with(['categories', 'image'])->paginate(5);
+        $validated = $request->validate([
+            'rating' => 'nullable|numeric|min:0|max:5',
+            'delivery_time' => 'nullable|integer|min:1',
+        ]);
+
+        $restaurants = Restaurant::with(['categories', 'image']);
+
+        if ($request->filled('rating')) {
+            $restaurants->where('rating', '>=', $request->rating);
+        }
+
+        if ($request->filled('delivery_time')) {
+            $restaurants->where('delivery_time', '<=', $request->delivery_time);
+        }
+
+        $restaurants = $restaurants->paginate(5);
 
         if ($restaurants->isEmpty()) {
             return $this->errorResponse('no data found');
@@ -44,6 +59,7 @@ class RestaurantController extends Controller
     {
         $restaurant = Restaurant::with(['reviews', 'categories', 'meals.variants'])
             ->find($id);
+
         if (!$restaurant) {
             return $this->errorResponse('Restaurant not found or has no available meals', 404);
         }

@@ -17,8 +17,6 @@ Route::group(['prefix' => 'v1' ,'middleware' => 'api'], function () {
         Route::get('/restaurants', [RestaurantController::class,'index']);
         Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 
-        Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
-
         Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
         Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
         Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
