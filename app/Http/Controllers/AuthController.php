@@ -29,11 +29,11 @@ class AuthController extends Controller
   }
   public function register(RegisterRequest $request)
   {
-     
+
     try {
-      
+
       DB::beginTransaction();
-      
+
       $data = $request->validated();
 
       if ($this->user->checkEmailExists($data['email'])) {
@@ -80,7 +80,7 @@ class AuthController extends Controller
   {
 
 
-    
+
     DB::beginTransaction();
 
     try {
@@ -94,7 +94,7 @@ class AuthController extends Controller
       $user = Auth::user();
 
       $token = JWTAuth::fromUser($user);
-    
+
       DB::commit();
 
       return $this->responseSuccess('User logged in successfully', [
@@ -279,4 +279,9 @@ class AuthController extends Controller
 
     return response()->json(['message' => 'OTP resent successfully', 'status' => true], 200);
   }
+  public function me()
+  {
+      return response()->json(auth()->user());
+  }
+
 }

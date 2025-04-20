@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\MealController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Middleware\CheckToken;
 
-Route::group(['prefix' => 'v1' ,'middleware' => 'jwt.auth'], function () {
+Route::group(['prefix' => 'v1' ,'middleware' => 'api'], function () {
         // Categories Routes
         Route::get('/categories', [CategoryController::class,'index']);
         Route::get('/categories/{category}', [CategoryController::class, 'show']);
@@ -25,6 +25,8 @@ Route::group(['prefix' => 'v1' ,'middleware' => 'jwt.auth'], function () {
 
         Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
         Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
+
+        Route::get('/me', [AuthController::class, 'me']);
 });
 
 Route::get('/user', function (Request $request) {
