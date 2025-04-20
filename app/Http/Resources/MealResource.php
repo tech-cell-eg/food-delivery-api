@@ -23,7 +23,6 @@ class MealResource extends JsonResource
                 'name' => $this->restaurant->name,
             ],
             'name' => $this->name,
-            'slug' => $this->slug,
             'description' => $this->description,
             'is_available' => $this->is_available,
             'image_url' => $this->image_url,
