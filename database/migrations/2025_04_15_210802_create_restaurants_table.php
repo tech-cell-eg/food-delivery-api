@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('rate', 3, 2)->nullable();
-            $table->decimal('delevery_fee', 8, 2)->default(0.00);
-            $table->unsignedInteger('delevery_time')->default(0);
+            $table->decimal('delivery_fee', 8, 2)->default(0.00);
+            $table->unsignedInteger('delivery_time')->default(0);
             $table->time('open_at')->nullable();
             $table->time('close_at')->nullable();
             $table->timestamps();

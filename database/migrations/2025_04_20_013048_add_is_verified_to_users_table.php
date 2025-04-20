@@ -13,7 +13,7 @@ return new class extends Migration
   {
     Schema::table('users', function (Blueprint $table) {
       //
-      $table->boolean('is_verified')->default(value: false);
+        $table->boolean('is_verified')->default(value: false);
     });
   }
 

@@ -16,7 +16,8 @@ class Restaurant extends Model
         'delivery_time',
         'open_at',
         'close_at',
-        'average_delivery_time'
+        'average_delivery_time',
+        'rate',
     ];
 
     public function categories()

@@ -9,22 +9,24 @@ use App\Http\Controllers\Api\MealController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Middleware\CheckToken;
 
-Route::group(['prefix' => 'v1' ,'middleware' => 'api'], function () {
-        // Categories Routes
-        Route::get('/categories', [CategoryController::class,'index']);
-        Route::get('/categories/{category}', [CategoryController::class, 'show']);
-        // Restaurant
-        Route::get('/restaurants', [RestaurantController::class,'index']);
-        Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
+// Meals
+Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
+Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
 
-        Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
-        Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
-        Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
+// Categories Routes
+Route::get('/categories', [CategoryController::class,'index']);
+Route::get('/categories/{category}', [CategoryController::class, 'show']);
+// Restaurant
+Route::get('/restaurants', [RestaurantController::class,'index']);
+Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 
-        Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
-        Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
+// Addresses
+Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
+Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
 
-        Route::get('/me', [AuthController::class, 'me']);
+Route::group(['prefix' => 'v1' ,'middleware' => 'jwt.auth'], function () {
+
 });
 
 Route::get('/user', function (Request $request) {

@@ -17,8 +17,6 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image_url' => $this->image_url,
-            'average_rating' => round($this->average_rating, 1),
-            'restaurants_count' => $this->restaurants_count,
         ];
 
     }
