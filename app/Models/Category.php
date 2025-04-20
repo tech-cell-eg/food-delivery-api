@@ -22,7 +22,7 @@ class Category extends Model
     }
     public function meals()
     {
-        return $this->belongsToMany(Meal::class, 'category_meal');
+        return $this->hasMany(Meal::class);
     }
 
     public function getRestaurantsCountAttribute()
