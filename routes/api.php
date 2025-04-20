@@ -18,6 +18,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('jwt:auth');
 Route::prefix('auth/')->controller(AuthController::class)->group(function () {
   Route::post('register', 'register');
+  Route::post('verify-otp', 'verifyOtp');
+  Route::post('resend-otp', 'resendOtp');
   Route::post('login', 'login');
   Route::post('logout', 'logout')->middleware('jwt.auth');
   Route::post('refreshtoken', 'refreshToken')->middleware('jwt.auth');

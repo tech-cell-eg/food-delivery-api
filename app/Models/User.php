@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+
 class User extends Authenticatable implements JWTSubject
 {
   /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -24,6 +25,8 @@ class User extends Authenticatable implements JWTSubject
     'name',
     'email',
     'password',
+    'phone',
+    'is_verified',
   ];
   public function getJWTIdentifier()
   {
@@ -54,5 +57,9 @@ class User extends Authenticatable implements JWTSubject
       'email_verified_at' => 'datetime',
       'password' => 'hashed',
     ];
+  }
+  public function image()
+  {
+    return $this->morphOne(Image::class, 'imageable');
   }
 }
