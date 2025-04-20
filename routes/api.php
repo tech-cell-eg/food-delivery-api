@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Api\MealController;
-use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Middleware\CheckToken;
 
