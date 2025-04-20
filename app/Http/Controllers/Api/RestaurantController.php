@@ -21,10 +21,12 @@ class RestaurantController extends Controller
             'delivery_time' => 'nullable|integer|min:1',
         ]);
 
-        $restaurants = Restaurant::with(['categories', 'image']);
+        $restaurants = Restaurant::with(['categories', 'image' ,'reviews']);
 
         if ($request->filled('rating')) {
-            $restaurants->where('rating', '>=', $request->rating);
+            $restaurants->whereHas('reviews', function($q) use ($request) {
+                $q->where('rating','>=',$request->rating);
+            });
         }
 
         if ($request->filled('delivery_time')) {
