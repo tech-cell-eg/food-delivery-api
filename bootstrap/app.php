@@ -1,14 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Foundation\Application;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Foundation\Application;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use App\Http\Middleware\ForceJsonResponse;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,9 +20,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->appendToGroup('api', ForceJsonResponse::class);  
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (JWTException $e, Request $request) {
+            if ($request->is('api/*')) {
+              return response()->json([
+                'message' => 'Token not provided or invalid',
+              ], 401);
+            }
+        });
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
@@ -81,3 +90,4 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
     })->create();
+ 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
 
 
+
 class Category extends Model
 {
     use Sluggable;
@@ -51,5 +52,9 @@ class Category extends Model
     public function getImageUrlAttribute()
     {
         return $this->image ? Storage::url($this->image->url) : null;
+    }
+    public function images()
+    {
+        return $this->morphOne(Image::class, 'imageable');
     }
 }
