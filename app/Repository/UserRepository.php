@@ -18,7 +18,28 @@ class UserRepository implements UserInterface
   {
     $data['password'] = Hash::make($data['password']);
     $data['email_verified_at'] = now();
-    return User::create($data);
+
+    $image_path = null;
+    if (isset($data['image'])) {
+      $image_path = $data['image']->store('images', 'public');
+    }
+
+    $user = User::create([
+      'name' => $data['name'],
+      'email' => $data['email'],
+      'password' => $data['password'],
+      'phone' => $data['phone'],
+      'is_verified' => false,
+
+    ]);
+
+    if ($image_path) {
+      $user->image()->create([
+        'url' => $image_path,
+      ]);
+    }
+
+    return $user->load('image');
   }
 
   public function login(array $data)

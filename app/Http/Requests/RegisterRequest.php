@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+
+
 class RegisterRequest extends FormRequest
 {
   /**
@@ -31,6 +33,7 @@ class RegisterRequest extends FormRequest
       'password' => 'required|string|min:8|confirmed',
       'password_confirmation' => 'required|string|min:8',
       'phone' => 'nullable|string|max:15',
+      'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ];
   }
 }
