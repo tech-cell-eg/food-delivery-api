@@ -13,70 +13,81 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
-  ->withRouting(
-    web: __DIR__ . '/../routes/web.php',
-    api: __DIR__ . '/../routes/api.php',
-    commands: __DIR__ . '/../routes/console.php',
-    health: '/up',
-  )
-  ->withMiddleware(function (Middleware $middleware) {
-    // Apply ForceJsonResponse to all API routes
-    $middleware->appendToGroup('api', ForceJsonResponse::class);
-    // Apply CheckToken to all API routes
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->appendToGroup('api', ForceJsonResponse::class);  
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (JWTException $e, Request $request) {
+            if ($request->is('api/*')) {
+              return response()->json([
+                'message' => 'Token not provided or invalid',
+              ], 401);
+            }
+        });
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => (bool) false,
+                    'message' => "Page not found",
+                    'data'    => $e->getMessage(),
+                ], 404);
+            }
+        });
 
-    // Register middleware aliases
+        $exceptions->render(function (ModelNotFoundException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => (bool) false,
+                    'message' => "Record not found",
+                    'data'    => $e->getMessage(),
+                ], 404);
+            }
+        });
 
-  })
-  ->withExceptions(function (Exceptions $exceptions) {
-    $exceptions->render(function (JWTException $e, Request $request) {
-      if ($request->is('api/*')) {
-        return response()->json([
-          'message' => 'Token not provided or invalid',
-        ], 401);
-      }
-    });
+        $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => (bool) false,
+                    'message' => "Method not allowed",
+                    'data'    => $e->getMessage(),
+                ], 405);
+            }
+        });
 
-    // Handle MissingTokenException for API
-    $exceptions->render(function (AuthenticationException $e, Request $request) {
-      if ($request->is('api/*')) {
-        return response()->json([
-          'success' => false,
-          'error' => [
-            'code' => 'UNAUTHENTICATED',
-            'message' => 'Authentication required',
-          ]
-        ], 401);
-      }
-    });
+        $exceptions->render(function (ValidationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => (bool) false,
+                    'message' => "Validation error",
+                    'data'    => $e->errors(),
+                ], 422);
+            }
+        });
 
-    // Handle AuthenticationException for API
-    $exceptions->render(function (TokenInvalidException $e, Request $request) {
-      return response()->json([
-        'success' => false,
-        'error' => [
-          'code' => 'TOKEN_INVALID',
-          'message' => 'Invalid token'
-        ]
-      ], 401);
-    });
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => (bool) false,
+                    'message' => "Unauthorized access",
+                    'data'    => $e->getMessage(),
+                ], 401);
+            }
+        });
 
-    // Handle RouteNotFoundException for API
-    $exceptions->render(function (NotFoundHttpException $e, Request $request) {
-      if ($request->is('api/*')) {
-        return response()->json([
-          'status' => 'error',
-          'message' => 'Endpoint not found',
-          'error_code' => 'ENDPOINT_NOT_FOUND'
-        ], 404);
-      }
-    });
-    $exceptions->render(function (UnauthorizedHttpException $e, Request $request) {
-      if ($request->is('api/*') || $request->expectsJson()) {
-        return response()->json([
-          'status' => false,
-          'message' => 'Unauthorized: Token is missing or invalid',
-          'error_details' => $e->getMessage()
-        ], 401);
-      }
-    });
-  })->create();
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => (bool) false,
+                    'message' => "Unexpected error",
+                    'data'    => $e->getMessage(),
+                ], 500);
+            }
+        });
+    })->create();
+ 

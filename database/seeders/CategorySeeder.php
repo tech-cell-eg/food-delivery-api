@@ -14,13 +14,57 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Category 1', 'slug' => 'category-1'],
-            ['name' => 'Category 2', 'slug' => 'category-2'],
-            ['name' => 'Category 3', 'slug' => 'category-3'],
+            [
+                'name' => 'Italian',
+                'image' => 'categories/italian.jpg'
+            ],
+            [
+                'name' => 'Mexican',
+                'image' => 'categories/mexican.jpg'
+            ],
+            [
+                'name' => 'Asian',
+                'image' => 'categories/asian.jpg'
+            ],
+            [
+                'name' => 'American',
+                'image' => 'categories/american.jpg'
+            ],
+            [
+                'name' => 'Mediterranean',
+                'image' => 'categories/mediterranean.jpg'
+            ],
+            [
+                'name' => 'Vegetarian',
+                'image' => 'categories/vegetarian.jpg'
+            ],
+            [
+                'name' => 'Vegan',
+                'image' => 'categories/vegan.jpg'
+            ],
+            [
+                'name' => 'Fast Food',
+                'image' => 'categories/fast-food.jpg'
+            ],
+            [
+                'name' => 'Seafood',
+                'image' => 'categories/seafood.jpg'
+            ],
+            [
+                'name' => 'Desserts',
+                'image' => 'categories/desserts.jpg'
+            ],
         ];
 
-        foreach ($categories as $category) {
-            Category::create($category);
+        foreach ($categories as $categoryData) {
+            $category = Category::create([
+                'name' => $categoryData['name'],
+            ]);
+
+            $category->image()->create([
+                'url' => $categoryData['image'],
+            ]);
         }
+
     }
 }
