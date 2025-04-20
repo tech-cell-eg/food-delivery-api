@@ -16,7 +16,6 @@ class Restaurant extends Model
         'delivery_time',
         'open_at',
         'close_at',
-        'average_delivery_time',
         'rate',
     ];
 
@@ -32,7 +31,7 @@ class Restaurant extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? Storage::url($this->image->url) : null;
+        return $this->image ? asset('storage/' . $this->image->url) : null;
     }
 
     public function meals()

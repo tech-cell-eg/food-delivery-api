@@ -21,12 +21,10 @@ class RestaurantController extends Controller
             'delivery_time' => 'nullable|integer|min:1',
         ]);
 
-        $restaurants = Restaurant::with(['categories', 'image' ,'reviews']);
+        $restaurants = Restaurant::with(['categories', 'image']);
 
         if ($request->filled('rating')) {
-            $restaurants->whereHas('reviews', function($q) use ($request) {
-                $q->where('rating','>=',$request->rating);
-            });
+            $restaurants->where('rate','>=',$request->rating);
         }
 
         if ($request->filled('delivery_time')) {
@@ -34,10 +32,10 @@ class RestaurantController extends Controller
         }
 
         $restaurants = $restaurants->paginate(5);
-
         if ($restaurants->isEmpty()) {
             return $this->errorResponse('no data found');
         }
+
         return $this->successResponse([
             'restaurants' => RestaurantIndexResource::collection( $restaurants ),
             'meta'             => [

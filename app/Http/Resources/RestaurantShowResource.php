@@ -18,9 +18,6 @@ class RestaurantShowResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'address' => $this->address,
-            'phone' => $this->phone,
-            'email' => $this->email,
             'image_url' => $this->image_url,
             'delivery_fee' => $this->delivery_fee,
             'opening_hours' => [
@@ -28,8 +25,8 @@ class RestaurantShowResource extends JsonResource
                 'close_at' => $this->close_at,
                 'is_open' => $this->isOpenNow()
             ],
-            'average_delivery_time' => $this->average_delivery_time,
-            'average_rating' => round($this->average_rating, 1),
+            'delivery_time' => $this->delivery_time,
+            'rating' => $this->rate,
 
             'categories' => $this->whenLoaded('categories', function () {
                 return $this->categories->map(function ($category) {
