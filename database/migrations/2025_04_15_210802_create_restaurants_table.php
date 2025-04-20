@@ -14,12 +14,10 @@ return new class extends Migration
         Schema::create('restaurants', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('address');
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->decimal('delivery_fee', 8, 2)->default(0.00);
+            $table->decimal('rate', 3, 2)->nullable();
+            $table->decimal('delevery_fee', 8, 2)->default(0.00);
+            $table->unsignedInteger('delevery_time')->default(0);
             $table->time('open_at')->nullable();
             $table->time('close_at')->nullable();
             $table->timestamps();

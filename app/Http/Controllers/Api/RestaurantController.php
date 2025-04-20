@@ -59,7 +59,7 @@ class RestaurantController extends Controller
 
     public function show($id)
     {
-        $restaurant = Restaurant::with(['reviews', 'categories', 'meals.variants'])
+        $restaurant = Restaurant::with(['categories', 'meals.variants'])
             ->find($id);
 
         if (!$restaurant) {

@@ -17,7 +17,6 @@ class RestaurantIndexResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'slug' => $this->slug,
             'image_url' => $this->image_url,
             'average_rating' => round($this->average_rating, 1),
             'delivery_fee' => $this->delivery_fee,
@@ -27,7 +26,6 @@ class RestaurantIndexResource extends JsonResource
                     return [
                         'id' => $category->id,
                         'name' => $category->name,
-                        'slug' => $category->slug
                     ];
                 });
             }),

@@ -5,41 +5,23 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Cviebrock\EloquentSluggable\Sluggable;
 
 class Restaurant extends Model
 {
-    use Sluggable;
 
     protected $fillable = [
         'name',
-        'slug',
         'description',
-        'address',
-        'phone',
-        'email',
         'delivery_fee',
+        'delivery_time',
         'open_at',
         'close_at',
         'average_delivery_time'
     ];
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name'
-            ]
-        ];
-    }
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_restaurant');
-    }
-
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
     }
 
     public function image()
@@ -52,10 +34,6 @@ class Restaurant extends Model
         return $this->image ? Storage::url($this->image->url) : null;
     }
 
-    public function getAverageRatingAttribute()
-    {
-        return $this->reviews()->avg('rating') ?? 0;
-    }
     public function meals()
     {
         return $this->hasMany(Meal::class);

@@ -10,7 +10,6 @@ class Meal extends Model
     protected $fillable = [
         'restaurant_id',
         'name',
-        'slug',
         'description',
         'is_available',
     ];
