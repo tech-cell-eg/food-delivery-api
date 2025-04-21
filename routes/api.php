@@ -34,7 +34,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   Route::put('/cart/sync', [CartController::class, 'syncCart']);
 });
 
-
 Route::get('/user', function (Request $request) {
   return $request->user();
 })->middleware('jwt:auth');
