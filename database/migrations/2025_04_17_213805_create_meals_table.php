@@ -13,13 +13,24 @@ return new class extends Migration
     {
         Schema::create('meals', function (Blueprint $table) {
             $table->id();
+
+            // Foreign Keys
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
+
+            // Meal Info
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('rate', 3, 2)->nullable();
-            $table->unsignedInteger('delivery_time')->default(0);
+
+            // Ratings & Availability
+            $table->decimal('rate', 3, 2)->nullable()->comment('Customer rating from 0.00 to 5.00');
+            $table->unsignedInteger('delivery_time')->default(0)->comment('Delivery time in minutes');
             $table->boolean('is_available')->default(true);
+
+            // Constraints & Indexes
+            $table->unique(['restaurant_id', 'name']);
+
+            // Timestamps
             $table->timestamps();
         });
     }

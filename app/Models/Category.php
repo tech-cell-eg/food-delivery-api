@@ -34,8 +34,4 @@ class Category extends Model
     {
         return $this->image ? Storage::url($this->image->url) : null;
     }
-    public function images()
-    {
-        return $this->morphOne(Image::class, 'imageable');
-    }
 }

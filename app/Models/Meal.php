@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Meal extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'restaurant_id',
         'name',
         'description',
         'rate',
         'delivery_time',
         'is_available',
         'category_id',
+        'restaurant_id',
     ];
 
     public function restaurant()
