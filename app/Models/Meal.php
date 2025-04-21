@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Meal extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'restaurant_id',
         'name',
         'description',
         'rate',
         'delivery_time',
         'is_available',
+        'category_id',
+        'restaurant_id',
     ];
 
     public function restaurant()
@@ -21,9 +25,9 @@ class Meal extends Model
         return $this->belongsTo(Restaurant::class);
     }
 
-    public function categories()
+    public function category()
     {
-        return $this->belongsToMany(Category::class, 'category_meal');
+        return $this->belongsTo(Category::class);
     }
 
     public function image()
@@ -43,6 +47,6 @@ class Meal extends Model
 
     public function ingredients()
     {
-        return $this->hasMany(Ingredient::class, 'category_meal');
+        return $this->belongsToMany(Ingredient::class, 'meal_ingredient');
     }
 }

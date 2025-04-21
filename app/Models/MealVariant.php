@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MealVariant extends Model
 {
+    use HasFactory;
+    
+    public $timestamps = false;
+
     protected $fillable = [
         'meal_id',
         'size',
-        'price',
-        'is_available',
+        'price'
     ];
 
     public function meal()

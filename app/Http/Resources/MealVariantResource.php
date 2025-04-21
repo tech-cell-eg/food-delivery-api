@@ -18,8 +18,6 @@ class MealVariantResource extends JsonResource
             'id' => $this->id,
             'size' => $this->size,
             'price' => $this->price,
-            'is_available' => $this->is_available,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
 }
 }

@@ -18,20 +18,14 @@ class MealResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'restaurant' => [
-                'id' => $this->restaurant->id,
-                'name' => $this->restaurant->name,
-            ],
-            'name' => $this->name,
-            'description' => $this->description,
+            'time' => $this->delivery_time,
             'rate' => (float) $this->rate,
-            'image_url' => $this->image_url,
-            'delivery_time' => $this->delivery_time,
-            'categories' => CategoryResource::collection($this->categories),
-            'variants' => MealVariantResource::collection($this->variants()->where('is_available', true)->get()),
-            'ingredients' => $this->ingredients,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'name' => $this->name,
+            'category' => $this->category->name,
+            'ingredients' => $this->ingredients->pluck('name'),
+            'img' => $this->image_url,
+            'desc' => $this->description,
+            'sizes' => MealVariantResource::collection($this->variants()->get()),
         ];
-
     }
 }

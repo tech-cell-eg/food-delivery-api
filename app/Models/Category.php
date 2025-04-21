@@ -22,7 +22,7 @@ class Category extends Model
     }
     public function meals()
     {
-        return $this->belongsToMany(Meal::class, 'category_meal');
+        return $this->hasMany(Meal::class);
     }
 
     public function getRestaurantsCountAttribute()
@@ -33,9 +33,5 @@ class Category extends Model
     public function getImageUrlAttribute()
     {
         return $this->image ? asset('storage/' . $this->image->url) : null;
-    }
-    public function images()
-    {
-        return $this->morphOne(Image::class, 'imageable');
     }
 }

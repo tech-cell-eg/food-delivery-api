@@ -6,6 +6,7 @@ use App\Models\Restaurant;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaginationResource;
 use App\Http\Resources\RestaurantIndexResource;
 use App\Http\Resources\RestaurantResource;
 use App\Http\Resources\RestaurantShowResource;
@@ -14,44 +15,25 @@ class RestaurantController extends Controller
 {
     use ApiResponse;
 
-    public function index(Request $request)
+    public function index()
     {
-        $validated = $request->validate([
-            'rating' => 'nullable|numeric|min:0|max:5',
-            'delivery_time' => 'nullable|integer|min:1',
-        ]);
+        $restaurants = Restaurant::with([
+            'categories',
+            'image',
+            'meals',
+            'meals.variants',
+            'meals.ingredients',
+            'meals.image',
+            'meals.category'
+        ])->paginate(5);
 
-        $restaurants = Restaurant::with(['categories', 'image']);
-
-        if ($request->filled('rating')) {
-            $restaurants->where('rate','>=',$request->rating);
-        }
-
-        if ($request->filled('delivery_time')) {
-            $restaurants->where('delivery_time', '<=', $request->delivery_time);
-        }
-
-        $restaurants = $restaurants->paginate(5);
         if ($restaurants->isEmpty()) {
             return $this->errorResponse('no data found');
         }
 
         return $this->successResponse([
-            'restaurants' => RestaurantIndexResource::collection( $restaurants ),
-            'meta'             => [
-                'total'        => $restaurants->total(),
-                'per_page'     => $restaurants->perPage(),
-                'current_page' => $restaurants->currentPage(),
-                'last_page'    => $restaurants->lastPage(),
-                'from'         => $restaurants->firstItem(),
-                'to'           => $restaurants->lastItem(),
-                'links'        => [
-                    'first' => $restaurants->url(1),
-                    'last'  => $restaurants->url($restaurants->lastPage()),
-                    'prev'  => $restaurants->previousPageUrl(),
-                    'next'  => $restaurants->nextPageUrl(),
-                ],
-            ]
+            'restaurants' => RestaurantIndexResource::collection($restaurants),
+            'meta' => new PaginationResource($restaurants),
         ]);
     }
 
