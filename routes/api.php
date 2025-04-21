@@ -30,12 +30,10 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
 
   // Cart
-  Route::get('/cart', [CartController::class, 'index']);
-  Route::post('/cart', [CartController::class, 'store']);
-  Route::put('/cart/sync', [CartController::class, 'syncCart']);
-  Route::put('/cart/item/{id}', [CartController::class, 'updateItem']);
-  Route::delete('/cart/item/{id}', [CartController::class, 'destroy']);
 });
+Route::get('/cart', [CartController::class, 'index']);
+Route::put('/cart/sync', [CartController::class, 'syncCart']);
+
 
 Route::get('/user', function (Request $request) {
   return $request->user();
