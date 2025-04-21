@@ -61,5 +61,25 @@ class CheifController extends Controller
 
         ]);
     }
+    public function getCheifOrders($id)
+    {
+        $cheif = Cheif::find($id);
+    
+        if (!$cheif) {
+            return response()->json([
+                'message' => 'Cheif not found'
+            ], 404);
+        }
+    
+        $orders = Order::whereHas('meals', function ($query) use ($id) {
+            $query->where('cheif_id', $id);
+        })->with(['user', 'restaurant', 'address', 'offer', 'meals'])->get();
+    
+        return response()->json([
+            'status' => 'true',
+            'message' => 'Cheif orders retrieved successfully',
+            'orders' => $orders,
+        ]);
+    }
     
 }

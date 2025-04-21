@@ -30,6 +30,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
 });
 Route::get('/cheifstatistics/{id}', [cheifController::class, 'statistics']);
+Route::get('/cheifstatistics/{id}/orders', [cheifController::class, 'getCheifOrders']);
 
 Route::get('/user', function (Request $request) {
   return $request->user();
