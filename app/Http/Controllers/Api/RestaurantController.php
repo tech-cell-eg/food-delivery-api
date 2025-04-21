@@ -34,18 +34,28 @@ class RestaurantController extends Controller
         return $this->successResponse([
             'restaurants' => RestaurantIndexResource::collection($restaurants),
             'meta' => new PaginationResource($restaurants),
-        ]);
+        ], 'Restaurants retrieved successfully');
     }
 
     public function show($id)
     {
-        $restaurant = Restaurant::with(['categories', 'meals.variants'])
-            ->find($id);
+        $restaurant = Restaurant::with([
+            'categories',
+            'image',
+            'meals',
+            'meals.variants',
+            'meals.ingredients',
+            'meals.image',
+            'meals.category'
+        ])->find($id);
 
         if (!$restaurant) {
             return $this->errorResponse('Restaurant not found or has no available meals', 404);
         }
 
-        return $this->successResponse(new RestaurantShowResource($restaurant), 'Restaurant retrieved successfully');
+        return $this->successResponse(
+            new RestaurantIndexResource($restaurant),
+            'Restaurant retrieved successfully'
+        );
     }
 }
