@@ -46,6 +46,10 @@ class CheifController extends Controller
         $averageRating = Rating::where('cheif_id', $id)->avg('rating') ?? 0;
     
         return response()->json([
+          'status' => 'true',
+            'message' => 'Cheif statistics retrieved successfully',
+            'cheif_id' => $id,
+            'cheif_name' => $cheif->name,
             'total_orders'   => $totalOrders,
             'recent_orders'  => $recentOrders,
             'total_revenue'  => round($totalRevenue, 2),
