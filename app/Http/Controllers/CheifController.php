@@ -27,7 +27,8 @@ class CheifController extends Controller
         }
     
         $mealIds = Meal::where('cheif_id', $id)->pluck('id');
-    
+        $mealsCount = $cheif->meals->count(); 
+    $mealNames = $cheif->meals->pluck('name'); 
         $orderIds = DB::table('order_meal')
             ->whereIn('meal_id', $mealIds)
             ->pluck('order_id')
@@ -38,12 +39,13 @@ class CheifController extends Controller
         $recentOrders = Order::whereIn('id', $orderIds)
             ->where('created_at', '>=', now()->subDays(30))
             ->count();
-    
+        
         $totalRevenue = DB::table('order_meal')
             ->whereIn('meal_id', $mealIds)
             ->sum(DB::raw('price * quantity'));
     
         $averageRating = Rating::where('cheif_id', $id)->avg('rating') ?? 0;
+
     
         return response()->json([
           'status' => 'true',
@@ -54,6 +56,9 @@ class CheifController extends Controller
             'recent_orders'  => $recentOrders,
             'total_revenue'  => round($totalRevenue, 2),
             'average_rating' => round($averageRating, 2),
+            'meals_count'    => $mealsCount,
+            'meal_names'     => $mealNames,
+
         ]);
     }
     
