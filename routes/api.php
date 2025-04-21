@@ -10,23 +10,24 @@ use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Middleware\CheckToken;
 use App\Http\Controllers\CheifController;
 
-Route::group(['prefix' => 'v1' ,'middleware' => 'jwt.auth'], function () {
-        // Categories Routes
-        Route::get('/categories', [CategoryController::class,'index']);
-        Route::get('/categories/{category}', [CategoryController::class, 'show']);
-        // Restaurant
-        Route::get('/restaurants', [RestaurantController::class,'index']);
-        Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
+// Meals
+Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
+Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
 
-        Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
+// Restaurant
+Route::get('/restaurants', [RestaurantController::class, 'index']);
+Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
+Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 
-        Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
-        Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
-        Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
-
-        Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
-        Route::get('/meals/{id}', [MealController::class, 'show'])->name('meals.show');
+// Categories Routes
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{category}', [CategoryController::class, 'show']);
         
+Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
+  // Addresses
+  Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
+  Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+  Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
 });
 Route::get('/cheifstatistics/{id}', [cheifController::class, 'statistics']);
 

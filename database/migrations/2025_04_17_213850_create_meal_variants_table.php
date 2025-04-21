@@ -16,10 +16,6 @@ return new class extends Migration
             $table->foreignId('meal_id')->constrained()->onDelete('cascade');
             $table->string('size')->comment('e.g., Small, Medium, Large');
             $table->decimal('price', 8, 2);
-            $table->boolean('is_available')->default(true);
-            
-
-            $table->timestamps();
         });
     }
 

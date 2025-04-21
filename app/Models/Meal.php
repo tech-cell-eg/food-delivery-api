@@ -14,7 +14,10 @@ class Meal extends Model
         'restaurant_id',
         'name',
         'description',
+        'rate',
+        'delivery_time',
         'is_available',
+        'category_id',
     ];
 
     public function restaurant()
@@ -22,9 +25,9 @@ class Meal extends Model
         return $this->belongsTo(Restaurant::class);
     }
 
-    public function categories()
+    public function category()
     {
-        return $this->belongsToMany(Category::class, 'category_meal');
+        return $this->belongsTo(Category::class);
     }
 
     public function image()
@@ -49,4 +52,9 @@ class Meal extends Model
 {
     return $this->hasMany(OrderMeal::class);
 }
+
+    public function ingredients()
+    {
+        return $this->belongsToMany(Ingredient::class, 'meal_ingredient');
+    }
 }

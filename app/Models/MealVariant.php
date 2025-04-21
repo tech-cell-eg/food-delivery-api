@@ -11,8 +11,7 @@ class MealVariant extends Model
     protected $fillable = [
         'meal_id',
         'size',
-        'price',
-        'is_available',
+        'price'
     ];
 
     public function meal()

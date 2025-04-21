@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class Category extends Model
 {
 
-    protected $fillable = ['name', 'slug'];
-
+    protected $fillable = ['name'];
 
     public function image()
     {
@@ -23,15 +22,7 @@ class Category extends Model
     }
     public function meals()
     {
-        return $this->belongsToMany(Meal::class, 'category_meal');
-    }
-
-    public function getAverageRatingAttribute()
-    {
-        return $this->restaurants()
-            ->withAvg('reviews', 'rating')
-            ->get()
-            ->avg('reviews_avg_rating') ?? 0;
+        return $this->hasMany(Meal::class);
     }
 
     public function getRestaurantsCountAttribute()

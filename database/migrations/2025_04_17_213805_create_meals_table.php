@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('meals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->boolean('is_available')->default(true); 
             $table->foreignId('cheif_id')->constrained()->onDelete('cascade');
+            $table->decimal('rate', 3, 2)->nullable();
+            $table->unsignedInteger('delivery_time')->default(0);
+            $table->boolean('is_available')->default(true);
             $table->timestamps();
 
         });

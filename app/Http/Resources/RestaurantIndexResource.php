@@ -17,21 +17,21 @@ class RestaurantIndexResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'slug' => $this->slug,
-            'image_url' => $this->image_url,
-            'average_rating' => round($this->average_rating, 1),
+            'img' => $this->image_url,
+            'desc' => $this->description,
+            'rate' => (float) $this->rate,
             'delivery_fee' => $this->delivery_fee,
-            'average_delivery_time' => $this->average_delivery_time,
+            'delivery_time' => $this->delivery_time,
             'categories' => $this->whenLoaded('categories', function () {
                 return $this->categories->map(function ($category) {
                     return [
                         'id' => $category->id,
                         'name' => $category->name,
-                        'slug' => $category->slug
                     ];
                 });
             }),
-            'is_open' => $this->isOpenNow() 
+            'is_open' => $this->isOpenNow(),
+            'meals' => MealResource::collection($this->meals()->get()),
         ];
     }
 }
