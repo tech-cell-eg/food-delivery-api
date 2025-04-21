@@ -33,7 +33,7 @@ class AddressController extends Controller
     public function show(Address $address)
     {
         if ($address->user_id !== Auth::id()) {
-            return $this->errorResponse('You do not have access', '', 404);
+            return $this->errorResponse('You do not have access', 404);
         }
 
         return $this->successResponse(new AddressResource($address), 'Address retrieved successfully');

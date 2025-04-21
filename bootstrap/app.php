@@ -1,16 +1,18 @@
 <?php
 
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\ForceJsonResponse;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Http\Middleware\ForceJsonResponse;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->appendToGroup('api', ForceJsonResponse::class);  
+        $middleware->appendToGroup('api', ForceJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (JWTException $e, Request $request) {
@@ -90,4 +92,4 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
     })->create();
- 
+

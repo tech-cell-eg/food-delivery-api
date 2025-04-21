@@ -41,6 +41,7 @@ class RestaurantController extends Controller
     {
         $restaurant = Restaurant::with(['categories', 'meals.variants'])
             ->find($id);
+
         if (!$restaurant) {
             return $this->errorResponse('Restaurant not found or has no available meals', 404);
         }
