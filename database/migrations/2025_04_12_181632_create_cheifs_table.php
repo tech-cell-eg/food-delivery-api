@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('meal_variants', function (Blueprint $table) {
+        Schema::create('cheifs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('meal_id')->constrained()->onDelete('cascade');
-            $table->string('size')->comment('e.g., Small, Medium, Large');
-            $table->decimal('price', 8, 2);
-            $table->boolean('is_available')->default(true);
-            
-
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('meal_variants');
+        Schema::dropIfExists('cheifs');
     }
 };

@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
 
 class Restaurant extends Model
 {
-    use Sluggable;
 
     protected $fillable = [
         'name',
@@ -24,14 +24,7 @@ class Restaurant extends Model
         'average_delivery_time'
     ];
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name'
-            ]
-        ];
-    }
+  
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_restaurant');

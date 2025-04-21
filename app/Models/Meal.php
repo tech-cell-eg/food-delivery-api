@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Meal extends Model
+
 {
+    /** @use HasFactory<\Database\Factories\MealFactory> */
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     protected $fillable = [
         'restaurant_id',
         'name',
-        'slug',
         'description',
         'is_available',
     ];
@@ -39,4 +41,12 @@ class Meal extends Model
     {
         return $this->image ? Storage::url($this->image->url) : null;
     }
+    public function cheif()
+    {
+        return $this->belongsTo(Cheif::class, 'cheif_id');
+    }
+    public function orderMeals()
+{
+    return $this->hasMany(OrderMeal::class);
+}
 }

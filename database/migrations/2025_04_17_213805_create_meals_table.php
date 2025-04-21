@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->boolean('is_available')->default(true);
+            $table->boolean('is_available')->default(true); 
+            $table->foreignId('cheif_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+
         });
     }
 
