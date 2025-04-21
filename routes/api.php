@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Api\MealController;
 use App\Http\Controllers\Api\RestaurantController;
+use App\Http\Controllers\CartController;
 use App\Http\Middleware\CheckToken;
 
 // Meals
@@ -27,6 +28,13 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
   Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
   Route::get('/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
+
+  // Cart
+  Route::get('/cart', [CartController::class, 'index']);
+  Route::post('/cart', [CartController::class, 'store']);
+  Route::put('/cart/sync', [CartController::class, 'syncCart']);
+  Route::put('/cart/item/{id}', [CartController::class, 'updateItem']);
+  Route::delete('/cart/item/{id}', [CartController::class, 'destroy']);
 });
 
 Route::get('/user', function (Request $request) {
