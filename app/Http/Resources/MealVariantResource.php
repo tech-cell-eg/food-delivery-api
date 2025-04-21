@@ -15,9 +15,9 @@ class MealVariantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'size' => $this->size,
-            'price' => $this->price,
+            'id'    => $this->id,
+            'size'  => $this->size,
+            'price' => (float) $this->price,
         ];
 }
 }
