@@ -49,7 +49,7 @@ class RestaurantController extends Controller
         }
 
         return $this->successResponse(
-            new RestaurantIndexResource($restaurant),
+            new RestaurantShowResource($restaurant),
             'Restaurant retrieved successfully'
         );
     }
