@@ -17,11 +17,7 @@ class RestaurantShowResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'slug' => $this->slug,
             'description' => $this->description,
-            'address' => $this->address,
-            'phone' => $this->phone,
-            'email' => $this->email,
             'image_url' => $this->image_url,
             'delivery_fee' => $this->delivery_fee,
             'opening_hours' => [
@@ -29,16 +25,14 @@ class RestaurantShowResource extends JsonResource
                 'close_at' => $this->close_at,
                 'is_open' => $this->isOpenNow()
             ],
-            'average_delivery_time' => $this->average_delivery_time,
-            'average_rating' => round($this->average_rating, 1),
-            'reviews_count' => $this->whenCounted('reviews'),
+            'delivery_time' => $this->delivery_time,
+            'rating' => $this->rate,
 
             'categories' => $this->whenLoaded('categories', function () {
                 return $this->categories->map(function ($category) {
                     return [
                         'id' => $category->id,
                         'name' => $category->name,
-                        'slug' => $category->slug,
                         'image_url' => $category->image_url
                     ];
                 });
@@ -55,18 +49,6 @@ class RestaurantShowResource extends JsonResource
                     ];
                 });
             }),
-
-            'reviews' => $this->whenLoaded('reviews', function () {
-                return $this->reviews->map(function ($review) {
-                    return [
-                        'id' => $review->id,
-                        'rating' => $review->rating,
-                        'comment' => $review->comment,
-                        'user_name' => $review->user->name,
-                        'created_at' => $review->created_at->diffForHumans()
-                    ];
-                });
-            })
         ];
     }
 }

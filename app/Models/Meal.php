@@ -10,8 +10,9 @@ class Meal extends Model
     protected $fillable = [
         'restaurant_id',
         'name',
-        'slug',
         'description',
+        'rate',
+        'delivery_time',
         'is_available',
     ];
 
@@ -37,6 +38,11 @@ class Meal extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? Storage::url($this->image->url) : null;
+        return $this->image ? asset('storage/' . $this->image->url) : null;
+    }
+
+    public function ingredients()
+    {
+        return $this->hasMany(Ingredient::class, 'category_meal');
     }
 }

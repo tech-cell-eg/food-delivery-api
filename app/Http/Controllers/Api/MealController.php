@@ -11,12 +11,10 @@ use App\Http\Resources\MealResource;
 class MealController extends Controller
 {
     use ApiResponse;
+
     public function index(Request $request)
     {
-        $query = Meal::where('is_available', true)
-                    ->whereHas('variants', function ($q) {
-                        $q->where('is_available', true);
-                    });
+        $query = Meal::where('is_available', true);
 
         if ($request->restaurant_id) {
             $query->where('restaurant_id', $request->restaurant_id);
@@ -28,7 +26,7 @@ class MealController extends Controller
             });
         }
 
-        $meals = $query->with(['restaurant', 'categories', 'variants'])->get();
+        $meals = $query->with(['restaurant', 'categories', 'variants', 'image', 'ingredients'])->get();
 
         return $this->successResponse(MealResource::collection($meals), 'Meals retrieved successfully');
     }

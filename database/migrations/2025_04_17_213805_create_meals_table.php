@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->decimal('rate', 3, 2)->nullable();
+            $table->unsignedInteger('delivery_time')->default(0);
             $table->boolean('is_available')->default(true);
             $table->timestamps();
         });
