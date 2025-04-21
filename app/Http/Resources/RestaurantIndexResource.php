@@ -24,7 +24,6 @@ class RestaurantIndexResource extends JsonResource
             'deliveryTime'  => (int) $this->delivery_time,
             'categories'    => $this->categories->pluck('name'),
             'is_open'       => $this->isOpenNow(),
-            'meals'         => MealResource::collection($this->meals),
         ];
     }
 }

@@ -19,12 +19,7 @@ class RestaurantController extends Controller
     {
         $restaurants = Restaurant::with([
             'categories',
-            'image',
-            'meals',
-            'meals.variants',
-            'meals.ingredients',
-            'meals.image',
-            'meals.category'
+            'image'
         ])->paginate(5);
 
         if ($restaurants->isEmpty()) {
