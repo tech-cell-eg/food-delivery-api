@@ -22,7 +22,7 @@ class CartSyncRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cart_items' => 'required|array',
+            'cart_items' => 'array',
             'cart_items.*.meal_id' => 'required|exists:meals,id',
             'cart_items.*.meal_variant_id' => 'required|exists:meal_variants,id',
             'cart_items.*.quantity' => 'required|integer',
@@ -32,7 +32,6 @@ class CartSyncRequest extends FormRequest
     public function messages()
     {
         return [
-            'cart_items.*.meal_id.required' => 'The meal ID is required.',
             'cart_items.*.meal_variant_id.required' => 'The meal variant ID is required.',
             'cart_items.*.quantity.required' => 'The quantity is required.',
             'cart_items.*.quantity.integer' => 'The quantity must be an integer.',
