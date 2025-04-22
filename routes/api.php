@@ -24,7 +24,7 @@ Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 // Categories Routes
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
-
+        
 Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   // Addresses
   Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
@@ -41,6 +41,8 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   Route::get('/cards', [PaymentController::class, 'listCards']);
 
 });
+Route::get('/cheifstatistics/{id}', [cheifController::class, 'statistics']);
+Route::get('/cheifstatistics/{id}/orders', [cheifController::class, 'getCheifOrders']);
 
 Route::get('/user', function (Request $request) {
   return $request->user();
@@ -53,4 +55,5 @@ Route::prefix('auth/')->controller(AuthController::class)->group(function () {
   Route::post('login', 'login');
   Route::post('logout', 'logout')->middleware('jwt.auth');
   Route::post('refreshtoken', 'refreshToken')->middleware('jwt.auth');
+
 });

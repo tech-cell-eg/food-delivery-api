@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Restaurant;
+use App\Models\Cheif;
+use App\Models\Meal;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Meal>

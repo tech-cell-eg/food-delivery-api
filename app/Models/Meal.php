@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Meal extends Model
+
 {
     use HasFactory;
 
@@ -44,6 +45,14 @@ class Meal extends Model
     {
         return $this->image ? asset('storage/' . $this->image->url) : null;
     }
+    public function cheif()
+    {
+        return $this->belongsTo(Cheif::class, 'cheif_id');
+    }
+    public function orderMeals()
+{
+    return $this->hasMany(OrderMeal::class);
+}
 
     public function ingredients()
     {

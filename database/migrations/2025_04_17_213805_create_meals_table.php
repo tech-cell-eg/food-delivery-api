@@ -21,6 +21,9 @@ return new class extends Migration
             // Meal Info
             $table->string('name');
             $table->text('description')->nullable();
+            $table->foreignId('cheif_id')->constrained()->onDelete('cascade');
+            $table->decimal('rate', 3, 2)->nullable();
+            $table->unsignedInteger('delivery_time')->default(0);
 
             // Ratings & Availability
             $table->decimal('rate', 3, 2)->nullable()->comment('Customer rating from 0.00 to 5.00');
@@ -32,6 +35,7 @@ return new class extends Migration
 
             // Timestamps
             $table->timestamps();
+
         });
     }
 
