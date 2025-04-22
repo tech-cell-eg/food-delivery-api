@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderMeal;
 use App\Models\Rating;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ApiResponse as ResponseApi;
 
 
 
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 class CheifController extends Controller
 {
     //
+    use ResponseApi;
     public function statistics($id)
     {
         $cheif = Cheif::find($id);
