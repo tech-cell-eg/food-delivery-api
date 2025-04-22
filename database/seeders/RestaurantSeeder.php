@@ -38,7 +38,7 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '11:00',
                 'close_at' => '23:00',
                 'image' => 'restaurants/mexican1.jpg',
-                'categories' => ['Mexican']
+                'categories' => ['Mexican'],
             ],
             [
                 'name' => 'Dragon Wok',
@@ -48,7 +48,8 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '10:30',
                 'close_at' => '22:30',
                 'image' => 'restaurants/asian1.jpg',
-                'categories' => ['Asian']
+                'categories' => ['Asian'],
+
             ],
             [
                 'name' => 'Burger Barn',
@@ -58,7 +59,7 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '11:00',
                 'close_at' => '00:00',
                 'image' => 'restaurants/american1.jpg',
-                'categories' => ['American', 'Fast Food']
+                'categories' => ['American', 'Fast Food'],
             ],
             [
                 'name' => 'Olive Tree',
@@ -68,7 +69,7 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '09:00',
                 'close_at' => '21:00',
                 'image' => 'restaurants/mediterranean1.jpg',
-                'categories' => ['Mediterranean', 'Vegetarian']
+                'categories' => ['Mediterranean', 'Vegetarian'],
             ],
             [
                 'name' => 'Green Leaf',
@@ -78,7 +79,7 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '08:00',
                 'close_at' => '20:00',
                 'image' => 'restaurants/vegan1.jpg',
-                'categories' => ['Vegan', 'Vegetarian']
+                'categories' => ['Vegan', 'Vegetarian'],
             ],
             [
                 'name' => 'Ocean Catch',
@@ -88,7 +89,8 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '12:00',
                 'close_at' => '22:00',
                 'image' => 'restaurants/seafood1.jpg',
-                'categories' => ['Seafood']
+                'categories' => ['Seafood'],
+
             ],
             [
                 'name' => 'Sweet Heaven',
@@ -98,7 +100,7 @@ class RestaurantSeeder extends Seeder
                 'open_at' => '08:00',
                 'close_at' => '20:00',
                 'image' => 'restaurants/desserts1.jpg',
-                'categories' => ['Desserts']
+                'categories' => ['Desserts'],
             ]
         ];
 
@@ -110,6 +112,7 @@ class RestaurantSeeder extends Seeder
                 'delivery_time' => $restaurantData['delivery_time'],
                 'open_at' => $restaurantData['open_at'],
                 'close_at' => $restaurantData['close_at'],
+                'rate' => rand(0,5),
             ]);
 
             $restaurant->image()->create([

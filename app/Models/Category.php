@@ -32,10 +32,6 @@ class Category extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? Storage::url($this->image->url) : null;
-    }
-    public function images()
-    {
-        return $this->morphOne(Image::class, 'imageable');
+        return $this->image ? asset('storage/' . $this->image->url) : null;
     }
 }

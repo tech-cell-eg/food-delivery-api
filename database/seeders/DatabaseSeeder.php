@@ -29,7 +29,13 @@ class DatabaseSeeder extends Seeder
           
           CheifSeeder::class,
             RatingSeeder::class,
+          ]);
                     
+        $this->call([
+            CategorySeeder::class,
+            RestaurantSeeder::class,
+            IngredientSeeder::class,
+            MealSeeder::class
         ]);
         Meal::factory(10)->create();
       MealVariant::factory(10)->create();

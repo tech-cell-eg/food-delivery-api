@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class MealVariant extends Model
 {
-  use HasFactory;
+    use HasFactory;
+    
+    public $timestamps = false;
+
     protected $fillable = [
         'meal_id',
         'size',

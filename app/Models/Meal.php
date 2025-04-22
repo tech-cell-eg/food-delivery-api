@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Meal extends Model
 
 {
-    /** @use HasFactory<\Database\Factories\MealFactory> */
-    use \Illuminate\Database\Eloquent\Factories\HasFactory;
+    use HasFactory;
+
     protected $fillable = [
-        'restaurant_id',
         'name',
         'description',
         'rate',
         'delivery_time',
         'is_available',
         'category_id',
+        'restaurant_id',
     ];
 
     public function restaurant()
@@ -42,7 +43,7 @@ class Meal extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? Storage::url($this->image->url) : null;
+        return $this->image ? asset('storage/' . $this->image->url) : null;
     }
     public function cheif()
     {

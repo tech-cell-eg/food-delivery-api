@@ -17,15 +17,15 @@ class MealResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'time' => $this->delivery_time,
-            'rate' => (float) $this->rate,
-            'name' => $this->name,
-            'category' => $this->category->name,
+            'id'          => $this->id,
+            'time'        => (int) $this->delivery_time,
+            'rate'        => (float) $this->rate,
+            'name'        => $this->name,
+            'category'    => $this->category->name,
             'ingredients' => $this->ingredients->pluck('name'),
-            'img' => $this->image_url,
-            'desc' => $this->description,
-            'sizes' => MealVariantResource::collection($this->variants()->get()),
+            'img'         => $this->image_url,
+            'desc'        => $this->description,
+            'sizes'       => MealVariantResource::collection($this->variants),
         ];
     }
 }

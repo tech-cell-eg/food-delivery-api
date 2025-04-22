@@ -19,13 +19,12 @@ class MealFactory extends Factory
      */
     public function definition(): array
     {
-      return [
-        'restaurant_id' => Restaurant::inRandomOrder()->first()->id,
-         'cheif_id' => Cheif::inRandomOrder()->first()->id,
-        'name' => $this->faker->word(), // اسم الوجبة عشوائي
-        'description' => $this->faker->sentence(), // وصف عشوائي للوجبة
-        'is_available' => $this->faker->boolean(), // هل الوجبة متوفرة أم لا (0 أو 1)
-    ];
-        
+        return [
+            'name'          => $this->faker->unique()->words(2, true),
+            'description'   => $this->faker->sentence(),
+            'rate'          => $this->faker->randomFloat(2, 3.5, 5),
+            'delivery_time' => $this->faker->numberBetween(15, 60),
+            'is_available'  => $this->faker->boolean(90),
+        ];
     }
 }

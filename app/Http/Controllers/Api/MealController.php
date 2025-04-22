@@ -14,27 +14,46 @@ class MealController extends Controller
 
     public function index(Request $request)
     {
-        $query = Meal::where('is_available', true);
+        $meals = Meal::query()
+            ->where('is_available', true)
+            ->when($request->restaurant_id, fn ($q) =>
+                $q->where('restaurant_id', $request->restaurant_id)
+            )
+            ->with([
+                'restaurant',
+                'category',
+                'variants',
+                'image',
+                'ingredients'
+            ])
+            ->get();
 
-        if ($request->restaurant_id) {
-            $query->where('restaurant_id', $request->restaurant_id);
-        }
-
-        $meals = $query->with(['restaurant', 'category', 'variants', 'image', 'ingredients'])->get();
-
-        return $this->successResponse(MealResource::collection($meals), 'Meals retrieved successfully');
+        return $this->successResponse(
+            MealResource::collection($meals),
+            'Meals retrieved successfully'
+        );
     }
 
     public function show($id)
     {
         $meal = Meal::where('is_available', true)
-            ->with(['restaurant', 'category', 'variants', 'image', 'ingredients'])
+            ->with([
+                'restaurant',
+                'category',
+                'variants',
+                'image',
+                'ingredients'
+            ])
             ->find($id);
 
         if (!$meal) {
             return $this->errorResponse('Meal not found or unavailable', 404);
         }
 
-        return $this->successResponse(new MealResource($meal), 'Meal retrieved successfully');
+        return $this->successResponse(
+            new MealResource($meal),
+            'Meal retrieved successfully'
+        );
     }
 }
+

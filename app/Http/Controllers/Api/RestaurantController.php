@@ -6,6 +6,7 @@ use App\Models\Restaurant;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaginationResource;
 use App\Http\Resources\RestaurantIndexResource;
 use App\Http\Resources\RestaurantResource;
 use App\Http\Resources\RestaurantShowResource;
@@ -16,38 +17,40 @@ class RestaurantController extends Controller
 
     public function index()
     {
-        $restaurants = Restaurant::with(['categories', 'image'])->paginate(5);
+        $restaurants = Restaurant::with([
+            'categories',
+            'image'
+        ])->paginate(5);
 
         if ($restaurants->isEmpty()) {
             return $this->errorResponse('no data found');
         }
+
         return $this->successResponse([
-            'restaurants' => RestaurantIndexResource::collection( $restaurants ),
-            'meta'             => [
-                'total'        => $restaurants->total(),
-                'per_page'     => $restaurants->perPage(),
-                'current_page' => $restaurants->currentPage(),
-                'last_page'    => $restaurants->lastPage(),
-                'from'         => $restaurants->firstItem(),
-                'to'           => $restaurants->lastItem(),
-                'links'        => [
-                    'first' => $restaurants->url(1),
-                    'last'  => $restaurants->url($restaurants->lastPage()),
-                    'prev'  => $restaurants->previousPageUrl(),
-                    'next'  => $restaurants->nextPageUrl(),
-                ],
-            ]
-        ]);
+            'restaurants' => RestaurantIndexResource::collection($restaurants),
+            'meta' => new PaginationResource($restaurants),
+        ], 'Restaurants retrieved successfully');
     }
 
     public function show($id)
     {
-        $restaurant = Restaurant::with(['categories', 'meals.variants'])
-            ->find($id);
+        $restaurant = Restaurant::with([
+            'categories',
+            'image',
+            'meals',
+            'meals.variants',
+            'meals.ingredients',
+            'meals.image',
+            'meals.category'
+        ])->find($id);
+
         if (!$restaurant) {
             return $this->errorResponse('Restaurant not found or has no available meals', 404);
         }
 
-        return $this->successResponse(new RestaurantShowResource($restaurant), 'Restaurant retrieved successfully');
+        return $this->successResponse(
+            new RestaurantShowResource($restaurant),
+            'Restaurant retrieved successfully'
+        );
     }
 }
