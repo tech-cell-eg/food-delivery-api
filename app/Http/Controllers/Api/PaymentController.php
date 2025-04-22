@@ -10,17 +10,19 @@ use Illuminate\Http\Request;
 use App\Services\StripeService;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Services\FcmNotificationService;
 use Illuminate\Support\Facades\Auth;
 
 
 class PaymentController extends Controller
 {
     use ApiResponse;
-    protected $stripeService;
+    protected $stripeService , $fcmService;
 
-    public function __construct(StripeService $stripeService)
+    public function __construct(StripeService $stripeService ,FcmNotificationService $fcmService)
     {
         $this->stripeService = $stripeService;
+        $this->fcmService = $fcmService;
     }
 
     public function createPaymentIntent(Request $request)
@@ -96,6 +98,23 @@ class PaymentController extends Controller
 
             if (($validated['save_card'] ?? false) && ($validated['payment_method_id'] ?? false)) {
                 $this->saveCard($user, $validated['payment_method_id']);
+            }
+
+            // Send notification if payment succeeded
+            if ($paymentIntent->status === 'succeeded') {
+                $title = 'New Order';
+                $body = "{$user->name} placed a new order.";
+
+                try {
+                    $this->fcmService->sendNotificationToUser(
+                        $user->id,
+                        $title,
+                        $body
+                    );
+                } catch (\Exception $e) {
+                    // Log the error but don't fail the payment confirmation
+                    \Log::error('Failed to send notification: ' . $e->getMessage());
+                }
             }
 
             return $this->successResponse([
