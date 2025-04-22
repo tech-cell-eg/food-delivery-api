@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
+use App\Http\Middleware\CheckToken;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Api\MealController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\CartController;
-use App\Http\Middleware\CheckToken;
+
 
 // Meals
 Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
@@ -32,6 +34,12 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   // Cart
   Route::get('/cart', [CartController::class, 'index']);
   Route::put('/cart/sync', [CartController::class, 'syncCart']);
+  Route::post('/payment-intent', [PaymentController::class, 'createPaymentIntent']);
+  Route::post('/confirm-payment', [PaymentController::class, 'confirmPayment']);
+  
+  Route::post('/cards', [PaymentController::class, 'saveCard']);
+  Route::get('/cards', [PaymentController::class, 'listCards']);
+
 });
 
 Route::get('/user', function (Request $request) {
