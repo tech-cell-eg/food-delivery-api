@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Cheif;
 use App\Models\Ingredient;
 use App\Models\Meal;
 use App\Models\MealVariant;
@@ -25,7 +26,7 @@ class MealSeeder extends Seeder
             $this->command->warn('No restaurants or categories found !!, Meal Seeding skipped.');
             return;
         }
-
+        
         foreach ($restaurants as $restaurant) {
             Meal::factory()
                 ->count(10)
@@ -33,10 +34,13 @@ class MealSeeder extends Seeder
                 ->each(function ($meal) use ($restaurant, $categories, $ingredients) {
                     $meal->restaurant_id = $restaurant->id;
                     $meal->category_id = $categories->random()->id;
+        
+
                     $meal->save();
 
                     $meal->image()->create([
                         'url' => 'images/meals/' . fake()->uuid . '.jpg',
+
                     ]);
 
                     $meal->ingredients()->attach(
@@ -49,6 +53,8 @@ class MealSeeder extends Seeder
                             'meal_id' => $meal->id,
                         ]);
                 });
+                
+            
         }
     }
 }

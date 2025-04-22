@@ -21,7 +21,7 @@ class RatingFactory extends Factory
       return [
         'cheif_id' => Cheif::factory()->create()->id,
         'user_id' => User::factory()->create()->id,
-        'restaurant_id' => $this->faker->numberBetween(1, 10), // Assuming you have 10 restaurants
+        'restaurant_id' => $this->faker->numberBetween(11, 20), // Assuming you have 10 restaurants
         'rating' => $this->faker->numberBetween(1, 5),
         'comment' => $this->faker->sentence(),
         'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
