@@ -19,6 +19,7 @@ class MealVariantFactory extends Factory
         return [
             'size'  => $this->faker->word,
             'price' => $this->faker->randomFloat(2, 5, 50),
+            'meal_id' => \App\Models\Meal::inRandomOrder()->first()->id,
         ];
     }
 }

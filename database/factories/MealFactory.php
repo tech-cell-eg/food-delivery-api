@@ -25,6 +25,8 @@ class MealFactory extends Factory
             'rate'          => $this->faker->randomFloat(2, 3.5, 5),
             'delivery_time' => $this->faker->numberBetween(15, 60),
             'is_available'  => $this->faker->boolean(90),
+            'restaurant_id' => Restaurant::inRandomOrder()->first()->id,
+            'cheif_id'      => Cheif::inRandomOrder()->first()->id,
         ];
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheifAuthController;
 
 
 // Meals
@@ -56,4 +57,10 @@ Route::prefix('auth/')->controller(AuthController::class)->group(function () {
   Route::post('logout', 'logout')->middleware('jwt.auth');
   Route::post('refreshtoken', 'refreshToken')->middleware('jwt.auth');
 
+
+});
+Route::prefix('auth/cheif')->controller(CheifAuthController::class)->group(function () {
+  Route::post('register', 'register');
+  Route::post('login', 'login');
+  Route::post('logout', 'logout')->middleware('jwt.auth');
 });

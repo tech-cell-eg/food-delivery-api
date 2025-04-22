@@ -44,6 +44,10 @@ return [
       'driver' => 'jwt',
       'provider' => 'users',
     ],
+    'cheif' => [
+      'driver' => 'jwt',
+      'provider' => 'cheifs',
+    ],
   ],
 
   /*
@@ -67,6 +71,10 @@ return [
     'users' => [
       'driver' => 'eloquent',
       'model' => env('AUTH_MODEL', App\Models\User::class),
+    ],
+    'cheifs' => [
+      'driver' => 'eloquent',
+      'model' => env('AUTH_CHEIF_MODEL', App\Models\Cheif::class),
     ],
 
     // 'users' => [
