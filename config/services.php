@@ -39,5 +39,7 @@ return [
         'key' => env('STRIPE_KEY'),
     ],
 
-
+    'fcm' => [
+        'project_id' => env('PROJECT_ID'),
+    ]
 ];
