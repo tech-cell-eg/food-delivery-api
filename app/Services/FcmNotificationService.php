@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Cheif;
 use App\Models\User;
 use App\Notifications\FcmDatabaseNotification;
 use Google\Client as GoogleClient;
@@ -11,7 +12,7 @@ class FcmNotificationService
 {
     public function sendNotificationToUser($userId, $title, $body)
     {
-        $user = User::find($userId);
+        $user = Cheif::find($userId);
 
         if (!$user) {
             throw new \Exception("User not found");

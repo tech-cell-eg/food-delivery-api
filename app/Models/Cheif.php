@@ -12,13 +12,13 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class Cheif  extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\CheifFactory> */
-    use HasFactory;
+    use HasFactory, Notifiable;
     protected $fillable = [
         'email',
         'password',
         'experience',
         'address',
-    
+
         'name',
         'user_id',
         'specialty',
