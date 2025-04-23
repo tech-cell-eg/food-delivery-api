@@ -5,23 +5,25 @@ namespace App\Services;
 use App\Models\Cheif;
 use App\Models\User;
 use App\Notifications\FcmDatabaseNotification;
+use App\Responses\responseApi;
 use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\Storage;
 
 class FcmNotificationService
 {
+    use responseApi;
     public function sendNotificationToUser($userId, $title, $body)
     {
-        $user = Cheif::find($userId);
+        $cheif = Cheif::find($userId);
 
-        if (!$user) {
-            throw new \Exception("User not found");
+        if (!$cheif) {
+            return $this->responseError('User not found', 400);
         }
 
-        $fcmToken = $user->fcm_token;
+        $fcmToken = $cheif->fcm_token;
 
         if (!$fcmToken) {
-            throw new \Exception("User does not have a device token");
+            return $this->responseError('User does not have a device token', 400);
         }
 
         // Create notification data
@@ -36,7 +38,7 @@ class FcmNotificationService
         $fcmResponse = $this->sendFirebaseNotification($fcmToken, $title, $body);
 
         // Save to database
-        $user->notify(new FcmDatabaseNotification($notificationData));
+        $cheif->notify(new FcmDatabaseNotification($notificationData));
 
         return [
             'fcm_response' => $fcmResponse,
