@@ -8,12 +8,11 @@ use App\Models\Payment;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Services\StripeService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Services\FcmNotificationService;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -111,17 +110,19 @@ class PaymentController extends Controller
                     foreach ($chiefs as $chief) {
                         try {
                             $this->fcmService->sendNotificationToUser(
-                                $chief->user_id,
+                                $chief->id,
                                 $title,
                                 $body
                             );
                         } catch (\Exception $e) {
                             \Log::error("Failed to send notification to chief {$chief->id}: " . $e->getMessage());
+                            return $this->errorResponse($e->getMessage(), 500);
                         }
                     }
                 } catch (\Exception $e) {
                     // Log the error but don't fail the payment confirmation
                     \Log::error('Failed to send notification to chiefs: ' . $e->getMessage());
+                    return $this->errorResponse($e->getMessage(), 500);
                 }
             }
             return $this->successResponse([
