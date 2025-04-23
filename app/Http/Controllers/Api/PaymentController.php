@@ -101,18 +101,11 @@ class PaymentController extends Controller
                 $this->saveCard($user, $validated['payment_method_id']);
             }
 
-            // Send notification if payment succeeded
             if ($paymentIntent->status === 'succeeded') {
                 $title = 'New Order';
                 $body = "{$user->name} placed a new order.";
 
                 try {
-                    $this->fcmService->sendNotificationToUser(
-                        $user->id,
-                        $title,
-                        $body
-                    );
-
                     $chiefs = DB::table('cheifs')->get();
 
                     foreach ($chiefs as $chief) {
@@ -127,10 +120,10 @@ class PaymentController extends Controller
                         }
                     }
                 } catch (\Exception $e) {
-                    \Log::error('Failed to send notification: ' . $e->getMessage());
+                    // Log the error but don't fail the payment confirmation
+                    \Log::error('Failed to send notification to chiefs: ' . $e->getMessage());
                 }
             }
-
             return $this->successResponse([
                 'payment_status' => $paymentIntent->status,
                 'payment' => $payment
