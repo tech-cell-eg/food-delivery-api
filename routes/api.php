@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheifAuthController;
+use App\Http\Controllers\CheifController;
 
 
 // Meals
