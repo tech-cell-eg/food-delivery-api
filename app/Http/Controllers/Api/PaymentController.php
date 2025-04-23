@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Services\StripeService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Services\FcmNotificationService;
@@ -111,8 +112,21 @@ class PaymentController extends Controller
                         $title,
                         $body
                     );
+
+                    $chiefs = DB::table('cheifs')->get();
+
+                    foreach ($chiefs as $chief) {
+                        try {
+                            $this->fcmService->sendNotificationToUser(
+                                $chief->user_id,
+                                $title,
+                                $body
+                            );
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to send notification to chief {$chief->id}: " . $e->getMessage());
+                        }
+                    }
                 } catch (\Exception $e) {
-                    // Log the error but don't fail the payment confirmation
                     \Log::error('Failed to send notification: ' . $e->getMessage());
                 }
             }
