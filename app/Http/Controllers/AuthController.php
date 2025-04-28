@@ -46,7 +46,7 @@ class AuthController extends Controller
 
       $user = $this->user->register($data);
       $otp = rand(100000, 999999);
-      $expiresAt = now()->addMinutes(5);
+      $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
 
       Otp::updateOrCreate(
         ['email' => $user->email],
@@ -56,13 +56,11 @@ class AuthController extends Controller
 
       DB::commit();
       return $this->responseSuccess('User registered successfully, please verify your email', [
-        'user' => new UserResource($user),
         'otp' => $otp,
         'expires_at' => $expiresAt
       ], 201);
     } catch (QueryException $e) {
       DB::rollBack();
-      return $this->responseSuccess('Database error during registration', $e->getMessage(), 500);
       return $this->responseError('Database error during registration', 500);
     } catch (\Exception $e) {
       DB::rollBack();
@@ -72,33 +70,51 @@ class AuthController extends Controller
 
   public function login(LoginRequest $request)
   {
+    $credentials = $request->validated();
+
+    if (! Auth::attempt($credentials)) {
+      return $this->responseError('Invalid credentials', 401);
+    }
+
     DB::beginTransaction();
     try {
-      $credentials = $request->validated();
-
-      if (! Auth::attempt($credentials)) {
-        DB::rollBack();
-        return $this->responseError('Invalid credentials', 401);
-      }
-
       $user = Auth::user();
+
+      if (! $user->is_verified) {
+        $otp = rand(100000, 999999);
+        $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
+
+        Otp::updateOrCreate(
+          ['email' => $user->email],
+          ['otp' => $otp, 'expires_at' => $expiresAt]
+        );
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return $this->responseSuccess('User not verified', [
+          'otp' => $otp,
+          'expires_at' => $expiresAt,
+        ], 200);
+      }
 
       $token = JWTAuth::fromUser($user);
 
       DB::commit();
 
-      return $this->responseSuccess('User logged in successfully', [
-        'token' => $token,
-        'token_type' => 'bearer',
-        'user' => $user,
-      ], 200);
+      $user = new UserResource($user);
+      $user['token'] = $token;
+
+      return $this->responseSuccess(
+        'User logged in successfully',
+        $user
+      );
     } catch (QueryException $e) {
       DB::rollBack();
       return $this->responseError('Database error during login', 500);
     } catch (JWTException $e) {
       DB::rollBack();
       return $this->responseError('Could not create token', 500);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       DB::rollBack();
       return $this->responseError('An unexpected error occurred', 500);
     }
@@ -167,7 +183,8 @@ class AuthController extends Controller
     DB::beginTransaction();
     try {
       $user = User::where('email', $request->email)->first();
-      if (!$user) {
+
+      if (! $user) {
         return $this->responseError('User not found', 404);
       }
 
@@ -186,13 +203,18 @@ class AuthController extends Controller
     $user->is_verified = true;
     $user->email_verified_at = now();
     $user->save();
+    $token = JWTAuth::fromUser($user);
+
+    $user = new UserResource($user);
+    $user['token'] = $token;
     DB::commit();
 
     $otpData->delete();
 
-    return $this->responseSuccess('OTP verified successfully', [
-      'user' => $user,
-    ], 200);
+    return $this->responseSuccess(
+      'OTP verified successfully',
+      $user
+    );
   }
 
   public function resendOtp(Request $request)
@@ -212,7 +234,7 @@ class AuthController extends Controller
     }
 
     $otp = rand(100000, 999999);
-    $expiresAt = now()->addMinutes(5);
+    $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
 
     Otp::updateOrCreate(
       ['email' => $user->email],
@@ -229,7 +251,13 @@ class AuthController extends Controller
 
   public function me()
   {
-    return response()->json(Auth::user());
+    $user = Auth::user()?->withRelationshipAutoloading();
+
+    if (! $user) {
+      return $this->responseError('User not found', 404);
+    }
+
+    return $this->responseSuccess('User retrieved successfully', new UserResource($user));
   }
 
   // This part for chef
@@ -246,7 +274,7 @@ class AuthController extends Controller
 
       $user = $this->user->registerChef($data);
       $otp = rand(100000, 999999);
-      $expiresAt = now()->addMinutes(5);
+      $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
 
       Otp::updateOrCreate(
         ['email' => $user->email],

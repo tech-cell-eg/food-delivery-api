@@ -43,9 +43,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
 Route::get('/cheifstatistics/{id}', [CheifController::class, 'statistics']);
 Route::get('/cheifstatistics/{id}/orders', [CheifController::class, 'getCheifOrders']);
 
-Route::get('/user', function (Request $request) {
-  return $request->user();
-})->middleware('jwt:auth');
+Route::get('/user', [AuthController::class, 'me']);
 
 Route::prefix('auth/')->controller(AuthController::class)->group(function () {
   Route::post('register', 'register');

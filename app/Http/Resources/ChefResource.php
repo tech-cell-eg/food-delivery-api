@@ -26,7 +26,7 @@ class ChefResource extends JsonResource
             "delivery_time" => $this->cheif?->delivery_time,
             "rate"          => $this->cheif?->rate,
             "images"        => $this->cheif?->images ?
-                $this->cheif->images->pluck('url')->map(fn($url) => asset($url)) :
+                $this->cheif->images->pluck('url')->map(fn($url) => asset('storage/' . $url)) :
                 [],
         ];
     }

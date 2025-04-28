@@ -36,7 +36,7 @@ class RegisterChefRequest extends FormRequest
             'rate'          => 'nullable|numeric',
             'delivery_fee'  => 'nullable|numeric',
             'delivery_time' => 'nullable|numeric',
-            'fcm_token'     => 'nullable|string',
+            'fcm_token'     => 'required|string',
         ];
     }
 }
