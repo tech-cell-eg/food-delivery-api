@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Cheif;
+use App\Models\Restaurant;
 use App\Models\User;
 
 /**
@@ -11,20 +12,20 @@ use App\Models\User;
  */
 class RatingFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-      return [
-        'cheif_id' => Cheif::factory()->create()->id,
-        'user_id' => User::factory()->create()->id,
-        'restaurant_id' => $this->faker->numberBetween(11, 20), // Assuming you have 10 restaurants
-        'rating' => $this->faker->numberBetween(1, 5),
-        'comment' => $this->faker->sentence(),
-        'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition(): array
+  {
+    return [
+      'cheif_id' => Cheif::inRandomOrder()->first()->id,
+      'user_id' => User::inRandomOrder()->first()->id,
+      'restaurant_id' => Restaurant::inRandomOrder()->first()->id, // Assuming you have 10 restaurants
+      'rating' => $this->faker->numberBetween(1, 5),
+      'comment' => $this->faker->sentence(),
+      'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
     ];
   }
 }

@@ -18,16 +18,11 @@ class CheifFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'password' => $this->faker->password(),
-            'phone' => $this->faker->phoneNumber(),
-            'address' => $this->faker->address(),
-            'specialty' => $this->faker->word(),
-            'experience' => $this->faker->numberBetween(1, 20),
+            'rate' => fake()->randomFloat(2, 3, 5),
+            'description' => fake()->sentence(),
+            'delivery_fee' => fake()->randomFloat(2, 3, 5),
+            'delivery_time' => fake()->randomDigit(),
             'user_id' => User::factory()->create()->id,
-            
-            //
         ];
     }
 }
