@@ -9,41 +9,47 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 
-class Cheif  extends Authenticatable implements JWTSubject
+class Cheif extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\CheifFactory> */
     use HasFactory, Notifiable;
-    protected $fillable = [
-        'email',
-        'password',
-        'experience',
-        'address',
 
-        'name',
+    protected $fillable = [
         'user_id',
-        'specialty',
-        'phone',
+        'description',
         'fcm_token',
+        'rate',
+        'delivery_fee',
+        'delivery_time',
     ];
+
     public function getJWTIdentifier()
     {
-      return $this->getKey();
+        return $this->getKey();
     }
+
     public function getJWTCustomClaims()
     {
-      return [];
+        return [];
     }
+
     public function meals()
     {
         return $this->hasMany(Meal::class);
     }
-    public function ratings()
-{
-    return $this->hasMany(Rating::class);
-}
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
 }
