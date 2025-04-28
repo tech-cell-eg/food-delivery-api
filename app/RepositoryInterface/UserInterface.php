@@ -3,6 +3,7 @@ namespace App\RepositoryInterface;
 interface UserInterface
 {
     public function register(array $data);
+    public function registerChef(array $data);
     public function login(array $data);
     public function logout();
     public function getUserById($id);

@@ -24,6 +24,9 @@ class User extends Authenticatable implements JWTSubject
     'name',
     'email',
     'password',
+    'phone',
+    'role',
+    'bio',
     'provider',
     'provider_id',
     'provider_token',
@@ -74,20 +77,24 @@ class User extends Authenticatable implements JWTSubject
       'otp_expires_at' => null,
     ]);
   }
+
   public function addresses()
   {
     return $this->hasMany(Address::class);
   }
+
   public function orders()
   {
     return $this->hasMany(Order::class);
   }
+
   public function image()
   {
     return $this->morphOne(Image::class, 'imageable');
   }
+
   public function cheif()
   {
     return $this->hasOne(Cheif::class);
-  } 
+  }
 }

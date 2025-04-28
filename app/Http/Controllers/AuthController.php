@@ -8,6 +8,9 @@ use App\Responses\responseApi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterChefRequest;
+use App\Http\Resources\ChefResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -15,24 +18,24 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\Models\Otp;
 use App\Mail\OtpMail;
+use Exception;
 use Illuminate\Support\Facades\Mail;
 
 
 class AuthController extends Controller
 {
   use ResponseApi;
-  //
+
   protected $user;
+
   public function __construct(UserInterface $user)
   {
     $this->user = $user;
   }
+
   public function register(RegisterRequest $request)
   {
-
     try {
-
-      
       DB::beginTransaction();
 
       $data = $request->validated();
@@ -40,7 +43,6 @@ class AuthController extends Controller
       if ($this->user->checkEmailExists($data['email'])) {
         return $this->responseError('Email already exists', 409);
       }
-
 
       $user = $this->user->register($data);
       $otp = rand(100000, 999999);
@@ -54,25 +56,23 @@ class AuthController extends Controller
 
       DB::commit();
       return $this->responseSuccess('User registered successfully, please verify your email', [
-        'user' => $user,
+        'user' => new UserResource($user),
         'otp' => $otp,
         'expires_at' => $expiresAt
       ], 201);
     } catch (QueryException $e) {
       DB::rollBack();
+      return $this->responseSuccess('Database error during registration', $e->getMessage(), 500);
       return $this->responseError('Database error during registration', 500);
     } catch (\Exception $e) {
       DB::rollBack();
       return $this->responseError('An unexpected error occurred', 500);
     }
   }
+
   public function login(LoginRequest $request)
   {
-
-
-
     DB::beginTransaction();
-
     try {
       $credentials = $request->validated();
 
@@ -103,6 +103,7 @@ class AuthController extends Controller
       return $this->responseError('An unexpected error occurred', 500);
     }
   }
+
   public function logout()
   {
     try {
@@ -143,6 +144,7 @@ class AuthController extends Controller
       return $this->responseError('Something went wrong during token refresh', 500);
     }
   }
+
   public function verifyOtp(Request $request)
   {
     $request->validate([
@@ -161,6 +163,7 @@ class AuthController extends Controller
     if (now()->gt($otpData->expires_at)) {
       return $this->responseError('OTP expired', 400);
     }
+
     DB::beginTransaction();
     try {
       $user = User::where('email', $request->email)->first();
@@ -191,6 +194,7 @@ class AuthController extends Controller
       'user' => $user,
     ], 200);
   }
+
   public function resendOtp(Request $request)
   {
     $request->validate([
@@ -222,11 +226,48 @@ class AuthController extends Controller
       'expires_at' => $expiresAt
     ], 200);
   }
+
   public function me()
   {
-      return response()->json(auth()->user());
+    return response()->json(Auth::user());
   }
-  
-  
-  
+
+  // This part for chef
+  public function registerChef(RegisterChefRequest $request)
+  {
+    try {
+      DB::beginTransaction();
+
+      $data = $request->validated();
+
+      if ($this->user->checkEmailExists($data['email'])) {
+        return $this->responseError('Email already exists', 409);
+      }
+
+      $user = $this->user->registerChef($data);
+      $otp = rand(100000, 999999);
+      $expiresAt = now()->addMinutes(5);
+
+      Otp::updateOrCreate(
+        ['email' => $user->email],
+        ['otp' => $otp, 'expires_at' => $expiresAt]
+      );
+
+      Mail::to($user->email)->send(new OtpMail($otp));
+
+      DB::commit();
+
+      return $this->responseSuccess('User registered successfully, please verify your email', [
+        'user' => new ChefResource($user),
+        'otp' => $otp,
+        'expires_at' => $expiresAt
+      ], 201);
+    } catch (QueryException $e) {
+      DB::rollBack();
+      return $this->responseError('Database error during registration', 500);
+    } catch (Exception $e) {
+      DB::rollBack();
+      return $this->responseError('An unexpected error occurred', 500);
+    }
+  }
 }

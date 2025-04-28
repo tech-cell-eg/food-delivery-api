@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Middleware\CheckToken;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AddressController;
@@ -10,8 +9,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheifAuthController;
-
+use App\Http\Controllers\CheifController;
 
 // Meals
 Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
@@ -42,8 +40,8 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   Route::get('/cards', [PaymentController::class, 'listCards']);
 
 });
-Route::get('/cheifstatistics/{id}', [cheifController::class, 'statistics']);
-Route::get('/cheifstatistics/{id}/orders', [cheifController::class, 'getCheifOrders']);
+Route::get('/cheifstatistics/{id}', [CheifController::class, 'statistics']);
+Route::get('/cheifstatistics/{id}/orders', [CheifController::class, 'getCheifOrders']);
 
 Route::get('/user', function (Request $request) {
   return $request->user();
@@ -51,16 +49,11 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('auth/')->controller(AuthController::class)->group(function () {
   Route::post('register', 'register');
+  Route::post('register/chef', 'registerChef');
   Route::post('verify-otp', 'verifyOtp');
   Route::post('resend-otp', 'resendOtp');
   Route::post('login', 'login');
   Route::post('logout', 'logout')->middleware('jwt.auth');
   Route::post('refreshtoken', 'refreshToken')->middleware('jwt.auth');
-
-
 });
-Route::prefix('auth/cheif')->controller(CheifAuthController::class)->group(function () {
-  Route::post('register', 'register');
-  Route::post('login', 'login');
-  Route::post('logout', 'logout')->middleware('jwt.auth');
-});
+

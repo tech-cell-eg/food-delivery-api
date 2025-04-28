@@ -25,12 +25,13 @@ class UserRepository implements UserInterface
     }
 
     $user = User::create([
-      'name' => $data['name'],
-      'email' => $data['email'],
-      'password' => $data['password'],
-      'phone' => $data['phone'],
+      'name'        => $data['name'],
+      'email'       => $data['email'],
+      'bio'         => $data['bio'],
+      'password'    => $data['password'],
+      'phone'       => $data['phone'],
+      'role'        => 'user',
       'is_verified' => false,
-
     ]);
 
     if ($image_path) {
@@ -42,10 +43,40 @@ class UserRepository implements UserInterface
     return $user->load('image');
   }
 
+  public function registerChef(array $data)
+  {
+    $data['password'] = Hash::make($data['password']);
+    $data['email_verified_at'] = now();
+
+    $user = User::create([
+      'name' => $data['name'],
+      'email' => $data['email'],
+      'password' => $data['password'],
+      'phone' => $data['phone'],
+      'role' => 'cheif',
+      'is_verified' => false,
+    ]);
+
+    $cheif = $user->cheif()->create([
+      'rate' => $data['rate'] ?? 0,
+      'description' => $data['description'],
+      'delivery_fee' => $data['delivery_fee'],
+      'delivery_time' => $data['delivery_time'],
+      'fcm_token' => $data['fcm_token'],
+    ]);
+
+    if (isset($data['images'])) {
+      foreach ($data['images'] as $image) {
+        $image_path = $image->store('images', 'public');
+        $cheif->images()->create(['url' => $image_path]);
+      }
+    }
+
+    return $user->load('cheif.images');
+  }
+
   public function login(array $data)
   {
-
-
     return Auth::attempt($data);
   }
 
