@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('cheifs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('description')->nullable();
+            $table->string('fcm_token')->nullable();
+            $table->unsignedInteger('rate')->default(0);
+            $table->decimal('delivery_fee', 8, 2)->default(0.00);
+            $table->unsignedInteger('delivery_time')->default(0);
             $table->timestamps();
         });
     }
