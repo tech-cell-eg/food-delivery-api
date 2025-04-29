@@ -286,7 +286,6 @@ class AuthController extends Controller
       DB::commit();
 
       return $this->responseSuccess('User registered successfully, please verify your email', [
-        'user' => new ChefResource($user),
         'otp' => $otp,
         'expires_at' => $expiresAt
       ], 201);
