@@ -13,5 +13,6 @@ interface UserInterface
     public function getUserByEmail($email);
     public function updateUserPassword($id, $password);
     public function updateUserEmail($id, $email);
+    public function updateUserProfile($user, array $data);
     public function checkEmailExists($email);
 }

@@ -6,10 +6,10 @@ namespace App\Repository;
 use App\Models\User;
 
 use App\RepositoryInterface\UserInterface;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
-
+use Illuminate\Support\Facades\Storage;
 
 class UserRepository implements UserInterface
 {
@@ -141,5 +141,30 @@ class UserRepository implements UserInterface
   public function checkEmailExists($email)
   {
     return User::where('email', $email)->exists();
+  }
+
+  public function updateUserProfile($user, array $data, ?UploadedFile $image = null)
+  {
+    $user->update([
+      'name' => $data['name'] ?? $user->name,
+      'bio' => $data['bio'] ?? $user->bio,
+      'phone' => $data['phone'] ?? $user->phone,
+    ]);
+
+    if ($image) {
+      if ($user->image && Storage::disk('public')->exists($user->image->url)) {
+        Storage::disk('public')->delete($user->image->url);
+      }
+
+      $image_path = $image->store('images', 'public');
+
+      if ($user->image) {
+        $user->image()->update(['url' => $image_path]);
+      } else {
+        $user->image()->create(['url' => $image_path]);
+      }
+    }
+
+    return $user->refresh();
   }
 }

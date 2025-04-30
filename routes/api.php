@@ -43,15 +43,18 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
 Route::get('/cheifstatistics/{id}', [CheifController::class, 'statistics']);
 Route::get('/cheifstatistics/{id}/orders', [CheifController::class, 'getCheifOrders']);
 
-Route::get('/user', [AuthController::class, 'me']);
+Route::middleware('jwt.auth')->group(function () {
+  Route::get('/user', [AuthController::class, 'me']);
+  Route::post('/user/profile', [AuthController::class, 'profile']);
+  Route::post('/auth/logout', [AuthController::class, 'logout']);
+  Route::post('/auth/refresh', [AuthController::class, 'refreshToken']);
+});
 
-Route::prefix('auth/')->controller(AuthController::class)->group(function () {
+Route::prefix('auth')->controller(AuthController::class)->group(function () {
   Route::post('register', 'register');
-  Route::post('register/chef', 'registerChef');
+  Route::post('register-chef', 'registerChef');
   Route::post('verify-otp', 'verifyOtp');
   Route::post('resend-otp', 'resendOtp');
   Route::post('login', 'login');
-  Route::post('logout', 'logout')->middleware('jwt.auth');
-  Route::post('refreshtoken', 'refreshToken')->middleware('jwt.auth');
 });
 

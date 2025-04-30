@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterChefRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ChefResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -20,7 +21,7 @@ use App\Models\Otp;
 use App\Mail\OtpMail;
 use Exception;
 use Illuminate\Support\Facades\Mail;
-
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -296,5 +297,19 @@ class AuthController extends Controller
       DB::rollBack();
       return $this->responseSuccess('An unexpected error occurred',  $e->getMessage());
     }
+  }
+
+  public function profile(UpdateProfileRequest $request)
+  {
+    $data = $request->validated();
+    /** @var Request|UpdateProfileRequest $request */
+    $image = $request->file('image');
+
+    $user = $this->user->updateUserProfile(Auth::user(), $data, $image);
+
+    return $this->responseSuccess(
+      'User profile updated successfully',
+      new UserResource($user)
+    );
   }
 }
