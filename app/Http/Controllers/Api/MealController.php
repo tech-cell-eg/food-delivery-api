@@ -27,7 +27,7 @@ class MealController extends Controller
                 'ingredients'
             ])
             ->get();
-
+        
         return $this->successResponse(
             MealResource::collection($meals),
             'Meals retrieved successfully'
