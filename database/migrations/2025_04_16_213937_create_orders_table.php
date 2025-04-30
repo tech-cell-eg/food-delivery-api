@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
-            $table->foreignId('address_id')->constrained()->onDelete('cascade');
-            $table->foreignId('offer_id')->nullable()->constrained()->onDelete('set null');
             $table->decimal('subtotal', 8, 2);
             $table->decimal('delivery_fee', 8, 2);
             $table->decimal('discount_amount', 8, 2)->default(0.00);

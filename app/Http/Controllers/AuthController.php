@@ -8,6 +8,10 @@ use App\Responses\responseApi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterChefRequest;
+use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Resources\ChefResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -15,38 +19,35 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\Models\Otp;
 use App\Mail\OtpMail;
+use Exception;
 use Illuminate\Support\Facades\Mail;
-
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
   use ResponseApi;
-  //
+
   protected $user;
+
   public function __construct(UserInterface $user)
   {
     $this->user = $user;
   }
+
   public function register(RegisterRequest $request)
   {
-
     try {
-
       DB::beginTransaction();
 
       $data = $request->validated();
 
       if ($this->user->checkEmailExists($data['email'])) {
-        return response()->json([
-          'status' => false,
-          'message' => 'Email already exists',
-        ], 409);
+        return $this->responseError('Email already exists', 409);
       }
-
 
       $user = $this->user->register($data);
       $otp = rand(100000, 999999);
-      $expiresAt = now()->addMinutes(5);
+      $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
 
       Otp::updateOrCreate(
         ['email' => $user->email],
@@ -55,64 +56,71 @@ class AuthController extends Controller
       Mail::to($user->email)->send(new OtpMail($otp));
 
       DB::commit();
-      return response()->json([
-        'status' => true,
-        'message' => 'User registered successfully',
-        'data' => $user
+      return $this->responseSuccess('User registered successfully, please verify your email', [
+        'otp' => $otp,
+        'expires_at' => $expiresAt
       ], 201);
     } catch (QueryException $e) {
       DB::rollBack();
-      return response()->json([
-        'status' => false,
-        'message' => 'Database error during registration, please try again later',
-        'error' => $e->getMessage()
-      ], 500);
+      return $this->responseSuccess('Database error during registration', $e->getMessage());
     } catch (\Exception $e) {
       DB::rollBack();
-      return response()->json([
-        'status' => false,
-        'message' => 'User registration failed, please try again',
-        'error' => $e->getMessage()
-      ], 500);
+      return $this->responseSuccess('An unexpected error occurred', $e->getMessage());
     }
   }
+
   public function login(LoginRequest $request)
   {
+    $credentials = $request->validated();
 
-
+    if (! Auth::attempt($credentials)) {
+      return $this->responseError('Invalid credentials', 401);
+    }
 
     DB::beginTransaction();
-
     try {
-      $credentials = $request->validated();
-
-      if (! Auth::attempt($credentials)) {
-        DB::rollBack();
-        return $this->responseError('Invalid credentials', 401);
-      }
-
       $user = Auth::user();
+
+      if (! $user->is_verified) {
+        $otp = rand(100000, 999999);
+        $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
+
+        Otp::updateOrCreate(
+          ['email' => $user->email],
+          ['otp' => $otp, 'expires_at' => $expiresAt]
+        );
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return $this->responseSuccess('User not verified', [
+          'otp' => $otp,
+          'expires_at' => $expiresAt,
+        ], 200);
+      }
 
       $token = JWTAuth::fromUser($user);
 
       DB::commit();
 
-      return $this->responseSuccess('User logged in successfully', [
-        'token' => $token,
-        'token_type' => 'bearer',
-        'user' => $user,
-      ], 200);
+      $user = new UserResource($user);
+      $user['token'] = $token;
+
+      return $this->responseSuccess(
+        'User logged in successfully',
+        $user
+      );
     } catch (QueryException $e) {
       DB::rollBack();
-      return $this->responseError('Database error during login', 500);
+      return $this->responseSuccess('Database error during login', $e->getMessage());
     } catch (JWTException $e) {
       DB::rollBack();
-      return $this->responseError('Could not create token', 500);
-    } catch (\Exception $e) {
+      return $this->responseSuccess('Could not create token', $e->getMessage());
+    } catch (Exception $e) {
       DB::rollBack();
-      return $this->responseError('An unexpected error occurred', 500);
+      return $this->responseSuccess('An unexpected error occurred', $e->getMessage());
     }
   }
+
   public function logout()
   {
     try {
@@ -124,21 +132,11 @@ class AuthController extends Controller
       // Invalidate the token
       JWTAuth::invalidate(JWTAuth::getToken());
 
-      return response()->json([
-        'status' => true,
-        'message' => 'Logged out successfully'
-      ]);
+      return $this->responseSuccess('User logged out successfully', [], 200);
     } catch (JWTException $e) {
-      return response()->json([
-        'status' => false,
-        'message' => 'Token missing or invalid'
-      ], 401);
+      return $this->responseSuccess('Token missing or invalid', $e->getMessage(), 401);
     } catch (\Exception $e) {
-      return response()->json([
-        'status' => false,
-        'message' => 'Something went wrong during logout',
-        'error' => $e->getMessage()
-      ], 500);
+      return $this->responseSuccess('Something went wrong during logout', $e->getMessage());
     }
   }
 
@@ -153,25 +151,17 @@ class AuthController extends Controller
       // Refresh the token
       $newToken = JWTAuth::refresh(JWTAuth::getToken());
 
-      return response()->json([
-        'status' => true,
-        'message' => 'Token refreshed successfully',
+      return $this->responseSuccess('Token refreshed successfully', [
         'token' => $newToken,
         'token_type' => 'bearer',
-      ]);
+      ], 200);
     } catch (JWTException $e) {
-      return response()->json([
-        'status' => false,
-        'message' => 'Token missing or invalid'
-      ], 401);
+      return $this->responseSuccess('Token missing or invalid', $e->getMessage(), 401);
     } catch (\Exception $e) {
-      return response()->json([
-        'status' => false,
-        'message' => 'Something went wrong during token refresh',
-        'error' => $e->getMessage()
-      ], 500);
+      return $this->responseSuccess('Something went wrong during token refresh', $e->getMessage());
     }
   }
+
   public function verifyOtp(Request $request)
   {
     $request->validate([
@@ -184,65 +174,50 @@ class AuthController extends Controller
       ->first();
 
     if (!$otpData) {
-      return response()->json([
-        'error' => 'Invalid OTP',
-        'status' => false,
-        'message' => 'Invalid OTP, please check your email and try again'
-      ], 400);
+      return $this->responseError('Invalid OTP', 400);
     }
 
     if (now()->gt($otpData->expires_at)) {
-      return response()->json([
-        '
-      error' => 'OTP expired',
-        'status' => false,
-        'message' => 'OTP expired, please request a new one'
-      ], 400);
+      return $this->responseError('OTP expired', 400);
     }
+
     DB::beginTransaction();
     try {
       $user = User::where('email', $request->email)->first();
-      if (!$user) {
-        return response()->json([
-          'error' => 'User not found',
-          'status' => false,
-          'message' => 'User not found, please register first'
-        ], 404);
+
+      if (! $user) {
+        return $this->responseError('User not found', 404);
       }
 
       if ($user->is_verified) {
-        return response()->json([
-          'error' => 'User already verified',
-          'status' => false,
-          'message' => 'User already verified'
-        ], 400);
+        return $this->responseError('User already verified', 400);
       }
     } catch (QueryException $e) {
       DB::rollBack();
-      return response()->json([
-        'error' => 'Database error',
-        'status' => false,
-        'message' => 'Database error during OTP verification, please try again later'
-      ], 500);
+      return $this->responseSuccess('Database error during OTP verification', $e->getMessage());
     } catch (\Exception $e) {
       DB::rollBack();
-      return response()->json([
-        'error' => 'Unexpected error',
-        'status' => false,
-        'message' => 'An unexpected error occurred during OTP verification, please try again'
-      ], 500);
+      return $this->responseSuccess('An unexpected error occurred', $e->getMessage());
     }
 
     // Update user verification status
     $user->is_verified = true;
     $user->email_verified_at = now();
     $user->save();
+    $token = JWTAuth::fromUser($user);
+
+    $user = new UserResource($user);
+    $user['token'] = $token;
     DB::commit();
 
     $otpData->delete();
 
-    return response()->json(['message' => 'Email verified. Account activated!', 'status' => true], 200);
+    return $this->responseSuccess(
+      'OTP verified successfully',
+      $user
+    );
   }
+
   public function resendOtp(Request $request)
   {
     $request->validate([
@@ -252,23 +227,15 @@ class AuthController extends Controller
     $user = User::where('email', $request->email)->first();
 
     if (!$user) {
-      return response()->json([
-        'error' => 'User not found',
-        'status' => false,
-        'message' => 'User not found, please register first'
-      ], 404);
+      return $this->responseError('User not found', 404);
     }
 
     if ($user->is_verified) {
-      return response()->json([
-        'error' => 'User already verified',
-        'status' => false,
-        'message' => 'User already verified'
-      ], 400);
+      return $this->responseError('User already verified', 400);
     }
 
     $otp = rand(100000, 999999);
-    $expiresAt = now()->addMinutes(5);
+    $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
 
     Otp::updateOrCreate(
       ['email' => $user->email],
@@ -277,11 +244,72 @@ class AuthController extends Controller
 
     Mail::to($user->email)->send(new OtpMail($otp));
 
-    return response()->json(['message' => 'OTP resent successfully', 'status' => true], 200);
-  }
-  public function me()
-  {
-      return response()->json(auth()->user());
+    return $this->responseSuccess('OTP resent successfully', [
+      'otp' => $otp,
+      'expires_at' => $expiresAt
+    ], 200);
   }
 
+  public function me()
+  {
+    $user = Auth::user()?->withRelationshipAutoloading();
+
+    if (! $user) {
+      return $this->responseError('User not found', 404);
+    }
+
+    return $this->responseSuccess('User retrieved successfully', new UserResource($user));
+  }
+
+  // This part for chef
+  public function registerChef(RegisterChefRequest $request)
+  {
+    try {
+      DB::beginTransaction();
+
+      $data = $request->validated();
+
+      if ($this->user->checkEmailExists($data['email'])) {
+        return $this->responseError('Email already exists', 409);
+      }
+
+      $user = $this->user->registerChef($data);
+      $otp = rand(100000, 999999);
+      $expiresAt = now()->addMinutes(5)->timezone('Africa/Cairo')->format('Y-m-d H:i:s');
+
+      Otp::updateOrCreate(
+        ['email' => $user->email],
+        ['otp' => $otp, 'expires_at' => $expiresAt]
+      );
+
+      Mail::to($user->email)->send(new OtpMail($otp));
+
+      DB::commit();
+
+      return $this->responseSuccess('User registered successfully, please verify your email', [
+        'otp' => $otp,
+        'expires_at' => $expiresAt
+      ], 201);
+    } catch (QueryException $e) {
+      DB::rollBack();
+      return $this->responseSuccess('Database error during registration', $e->getMessage());
+    } catch (Exception $e) {
+      DB::rollBack();
+      return $this->responseSuccess('An unexpected error occurred',  $e->getMessage());
+    }
+  }
+
+  public function profile(UpdateProfileRequest $request)
+  {
+    $data = $request->validated();
+    /** @var Request|UpdateProfileRequest $request */
+    $image = $request->file('image');
+
+    $user = $this->user->updateUserProfile(Auth::user(), $data, $image);
+
+    return $this->responseSuccess(
+      'User profile updated successfully',
+      new UserResource($user)
+    );
+  }
 }
