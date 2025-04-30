@@ -61,10 +61,10 @@ class AuthController extends Controller
       ], 201);
     } catch (QueryException $e) {
       DB::rollBack();
-      return $this->responseError('Database error during registration', 500);
+      return $this->responseSuccess('Database error during registration', $e->getMessage());
     } catch (\Exception $e) {
       DB::rollBack();
-      return $this->responseError('An unexpected error occurred', 500);
+      return $this->responseSuccess('An unexpected error occurred', $e->getMessage());
     }
   }
 
@@ -110,13 +110,13 @@ class AuthController extends Controller
       );
     } catch (QueryException $e) {
       DB::rollBack();
-      return $this->responseError('Database error during login', 500);
+      return $this->responseSuccess('Database error during login', $e->getMessage());
     } catch (JWTException $e) {
       DB::rollBack();
-      return $this->responseError('Could not create token', 500);
+      return $this->responseSuccess('Could not create token', $e->getMessage());
     } catch (Exception $e) {
       DB::rollBack();
-      return $this->responseError('An unexpected error occurred', 500);
+      return $this->responseSuccess('An unexpected error occurred', $e->getMessage());
     }
   }
 
@@ -133,9 +133,9 @@ class AuthController extends Controller
 
       return $this->responseSuccess('User logged out successfully', [], 200);
     } catch (JWTException $e) {
-      return $this->responseError('Token missing or invalid', 401);
+      return $this->responseSuccess('Token missing or invalid', $e->getMessage(), 401);
     } catch (\Exception $e) {
-      return $this->responseError('Something went wrong during logout', 500);
+      return $this->responseSuccess('Something went wrong during logout', $e->getMessage());
     }
   }
 
@@ -155,9 +155,9 @@ class AuthController extends Controller
         'token_type' => 'bearer',
       ], 200);
     } catch (JWTException $e) {
-      return $this->responseError('Token missing or invalid', 401);
+      return $this->responseSuccess('Token missing or invalid', $e->getMessage(), 401);
     } catch (\Exception $e) {
-      return $this->responseError('Something went wrong during token refresh', 500);
+      return $this->responseSuccess('Something went wrong during token refresh', $e->getMessage());
     }
   }
 
@@ -193,10 +193,10 @@ class AuthController extends Controller
       }
     } catch (QueryException $e) {
       DB::rollBack();
-      return $this->responseError('Database error during OTP verification', 500);
+      return $this->responseSuccess('Database error during OTP verification', $e->getMessage());
     } catch (\Exception $e) {
       DB::rollBack();
-      return $this->responseError('An unexpected error occurred', 500);
+      return $this->responseSuccess('An unexpected error occurred', $e->getMessage());
     }
 
     // Update user verification status
@@ -291,10 +291,10 @@ class AuthController extends Controller
       ], 201);
     } catch (QueryException $e) {
       DB::rollBack();
-      return $this->responseError('Database error during registration', 500);
+      return $this->responseSuccess('Database error during registration', $e->getMessage());
     } catch (Exception $e) {
       DB::rollBack();
-      return $this->responseError('An unexpected error occurred', 500);
+      return $this->responseSuccess('An unexpected error occurred',  $e->getMessage());
     }
   }
 }
