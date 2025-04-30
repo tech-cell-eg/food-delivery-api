@@ -55,5 +55,16 @@ class MealController extends Controller
             'Meal retrieved successfully'
         );
     }
+    public function store(Request $request)
+    {
+        // Validate and create a new meal
+        $meal = Meal::create($request->all());
+
+        return $this->successResponse(
+            new MealResource($meal),
+            'Meal created successfully',
+            201
+        );
+    }
 }
 
