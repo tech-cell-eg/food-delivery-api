@@ -19,6 +19,7 @@ class Meal extends Model
         'is_available',
         'category_id',
         'restaurant_id',
+        'cheif_id',
     ];
 
     public function restaurant()

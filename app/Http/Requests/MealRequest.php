@@ -11,7 +11,7 @@ class MealRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,12 +25,10 @@ class MealRequest extends FormRequest
           'name' => 'required|string|max:255',
           'description' => 'nullable|string|max:1000',
           'rate' => 'nullable|numeric|min:0|max:5',
-          'staurant_id' => 'required|exists:restaurants,id',
+          'restaurant_id' => 'required|exists:restaurants,id',
           'category_id' => 'required|exists:categories,id',
           'is_available' => 'required|boolean',
-          'chief_id' => 'required|exists:chiefs,id',
-          
-
+          'delivery_time' => 'required|integer|min:0',
             //
         ];
     }

@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\RestaurantController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheifController;
+use App\Http\Middleware\IsCheif;
+
 
 // Meals
 Route::get('/meals', [MealController::class, 'index'])->name('meals.index');
@@ -38,6 +40,11 @@ Route::group(['prefix' => 'v1', 'middleware' => 'jwt.auth'], function () {
   
   Route::post('/cards', [PaymentController::class, 'saveCard']);
   Route::get('/cards', [PaymentController::class, 'listCards']);
+  //meals
+  Route::post('/meals', [MealController::class, 'store'])->name('meals.store')->middleware(IsCheif::class);
+  
+  Route::put('/meals/{id}', [MealController::class, 'update'])->name('meals.update')->middleware(IsCheif::class);
+  Route::delete('/meals/{id}', [MealController::class, 'destroy'])->name('meals.destroy')->middleware(IsCheif::class);
 
 });
 Route::get('/cheifstatistics/{id}', [CheifController::class, 'statistics']);
@@ -56,5 +63,6 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
   Route::post('verify-otp', 'verifyOtp');
   Route::post('resend-otp', 'resendOtp');
   Route::post('login', 'login');
+
 });
 
