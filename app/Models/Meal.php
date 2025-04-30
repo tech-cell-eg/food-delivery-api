@@ -43,16 +43,16 @@ class Meal extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset('storage/' . $this->image->url) : null;
+        return $this->image ? $this->image->url : null;
     }
     public function cheif()
     {
         return $this->belongsTo(Cheif::class, 'cheif_id');
     }
     public function orderMeals()
-{
-    return $this->hasMany(OrderMeal::class);
-}
+    {
+        return $this->hasMany(OrderMeal::class);
+    }
 
     public function ingredients()
     {

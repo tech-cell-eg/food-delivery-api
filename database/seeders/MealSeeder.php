@@ -2,14 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use App\Models\Cheif;
-use App\Models\Ingredient;
-use App\Models\Meal;
-use App\Models\MealVariant;
-use App\Models\Restaurant;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\{Restaurant, Category, Ingredient, Meal, MealVariant, Cheif};
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
 
 class MealSeeder extends Seeder
 {
@@ -19,42 +14,69 @@ class MealSeeder extends Seeder
     public function run(): void
     {
         $restaurants = Restaurant::all();
-        $categories = Category::all();
-        $ingredients = Ingredient::all();
 
-        if ($restaurants->isEmpty() || $categories->isEmpty()) {
-            $this->command->warn('No restaurants or categories found !!, Meal Seeding skipped.');
+        if ($restaurants->isEmpty()) {
+            $this->command->warn('No restaurants found !! Meal seeding skipped.');
             return;
         }
-        
-        foreach ($restaurants as $restaurant) {
-            Meal::factory()
-                ->count(10)
-                ->make()
-                ->each(function ($meal) use ($restaurant, $categories, $ingredients) {
-                    $meal->restaurant_id = $restaurant->id;
-                    $meal->category_id = $categories->random()->id;
-        
 
-                    $meal->save();
+        $ingredientsResponse = Http::get('https://www.themealdb.com/api/json/v1/1/list.php?i=list');
+        $apiIngredients = $ingredientsResponse->json('meals');
 
-                    $meal->image()->create([
-                        'url' => 'images/meals/' . fake()->uuid . '.jpg',
-
-                    ]);
-
-                    $meal->ingredients()->attach(
-                        $ingredients->random(rand(1, 3))->pluck('id')->toArray()
-                    );
-
-                    MealVariant::factory()
-                        ->count(3)
-                        ->create([
-                            'meal_id' => $meal->id,
-                        ]);
-                });
-                
-            
+        if (!$apiIngredients) {
+            $this->command->warn('No ingredients fetched from API.');
+            return;
         }
+
+        $insertedIngredients = collect($apiIngredients)->map(function ($ing) {
+            return Ingredient::create([
+                'name' => strtolower($ing['strIngredient']),
+            ]);
+        });
+
+        $ingredients = $insertedIngredients->keyBy(fn($i) => strtolower($i->name));
+
+        $mealsResponse = Http::get('https://www.themealdb.com/api/json/v1/1/search.php?f=c');
+        $apiMeals = $mealsResponse->json('meals');
+
+        if (!$apiMeals) {
+            $this->command->warn('No meals fetched from API.');
+            return;
+        }
+
+        foreach ($restaurants as $restaurant) {
+            collect($apiMeals)->take(10)->each(function ($apiMeal) use ($restaurant, &$ingredients) {
+
+                $category = Category::inRandomOrder()->first();
+
+                $meal = new Meal();
+                $meal->name = $apiMeal['strMeal'];
+                $meal->description = $apiMeal['strInstructions'] ?? 'No description';
+                $meal->rate = rand(1, 5);
+                $meal->delivery_time = rand(15, 60);
+                $meal->is_available = rand(0, 1);
+                $meal->restaurant_id = $restaurant->id;
+                $meal->category_id = $category->id;
+                $meal->cheif_id = Cheif::inRandomOrder()->first()->id;
+                $meal->save();
+
+                $meal->image()->create([
+                    'url' => $apiMeal['strMealThumb'] ?? 'https://cdn-icons-png.freepik.com/256/8449/8449978.png',
+                ]);
+
+                $ingredientNames = collect(range(1, 20))
+                    ->map(fn($i) => strtolower($apiMeal["strIngredient{$i}"] ?? null))
+                    ->filter(fn($name) => !empty($name) && $ingredients->has($name));
+
+                $ingredientIds = $ingredientNames->map(fn($name) => $ingredients[$name]->id)->toArray();
+                $meal->ingredients()->attach($ingredientIds);
+
+                MealVariant::factory()->count(3)->create([
+                    'meal_id' => $meal->id,
+                ]);
+            });
+        }
+
+        $this->command->info('Ingredients, categories, and real meals seeded successfully!');
     }
 }
