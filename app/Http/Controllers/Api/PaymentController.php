@@ -77,7 +77,7 @@ class PaymentController extends Controller
                 'currency' => $validated['currency']
             ], 'Payment intent created successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage());
         }
     }
 
@@ -116,13 +116,13 @@ class PaymentController extends Controller
                             );
                         } catch (\Exception $e) {
                             \Log::error("Failed to send notification to chief {$chief->id}: " . $e->getMessage());
-                            return $this->errorResponse($e->getMessage(), 500);
+                            return $this->errorResponse($e->getMessage());
                         }
                     }
                 } catch (\Exception $e) {
                     // Log the error but don't fail the payment confirmation
                     \Log::error('Failed to send notification to chiefs: ' . $e->getMessage());
-                    return $this->errorResponse($e->getMessage(), 500);
+                    return $this->errorResponse($e->getMessage());
                 }
             }
             return $this->successResponse([
@@ -133,7 +133,7 @@ class PaymentController extends Controller
                 : 'Payment processing');
 
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ class PaymentController extends Controller
                 'card' => $card
             ], 'Card saved successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage());
         }
     }
 
@@ -171,7 +171,7 @@ class PaymentController extends Controller
                 'cards' => $cards
             ], 'Cards retrieved successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage());
         }
     }
 

@@ -2,26 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegisterRequest;
 use App\RepositoryInterface\UserInterface;
 use App\Responses\responseApi;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\{LoginRequest, RegisterChefRequest, UpdateProfileRequest, RegisterRequest};
+use Illuminate\Support\Facades\{DB, Auth, Mail};
 use Illuminate\Database\QueryException;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterChefRequest;
-use App\Http\Requests\UpdateProfileRequest;
-use App\Http\Resources\ChefResource;
 use App\Http\Resources\UserResource;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Models\{User, Otp};
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
-use App\Models\Otp;
 use App\Mail\OtpMail;
 use Exception;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
